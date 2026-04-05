@@ -1,0 +1,136 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use App\Models\Pathologie;
+use App\Models\User;
+
+class ExtraPathologieSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $user = User::first();
+
+        $pathologies = [
+            // VIROLOGIE & COVID
+            ['nom' => 'COVID-19', 'categorie' => 'Virologie', 'description' => 'Maladie infectieuse causée par le coronavirus SARS-CoV-2 provoquant une pandémie mondiale en 2020.', 'symptomes' => 'Fièvre, toux sèche, fatigue, perte d\'odorat et de goût, essoufflement, douleurs musculaires'],
+            ['nom' => 'COVID long', 'categorie' => 'Virologie', 'description' => 'Syndrome post-COVID avec symptômes persistants plusieurs semaines ou mois après l\'infection.', 'symptomes' => 'Fatigue chronique, brouillard mental, essoufflement, douleurs thoraciques, troubles du sommeil'],
+            ['nom' => 'Grippe saisonnière', 'categorie' => 'Virologie', 'description' => 'Infection virale respiratoire causée par les virus influenza A ou B survenant chaque hiver.', 'symptomes' => 'Fièvre élevée soudaine, courbatures, maux de tête, toux, fatigue intense, frissons'],
+            ['nom' => 'Grippe H1N1', 'categorie' => 'Virologie', 'description' => 'Souche pandémique du virus influenza A responsable de la pandémie de 2009.', 'symptomes' => 'Fièvre, toux, maux de gorge, courbatures, diarrhée, vomissements, essoufflement'],
+            ['nom' => 'Variole du singe (Mpox)', 'categorie' => 'Virologie', 'description' => 'Maladie virale zoonotique causant des éruptions cutanées similaires à la variole.', 'symptomes' => 'Fièvre, éruption vésiculaire, ganglions enflés, maux de tête, douleurs musculaires'],
+            ['nom' => 'Ebola', 'categorie' => 'Virologie', 'description' => 'Fièvre hémorragique virale grave causée par le virus Ebola avec un taux de mortalité élevé.', 'symptomes' => 'Fièvre soudaine, fatigue, douleurs musculaires, maux de tête, vomissements, saignements'],
+            ['nom' => 'Marburg', 'categorie' => 'Virologie', 'description' => 'Fièvre hémorragique virale rare et mortelle de la même famille que le virus Ebola.', 'symptomes' => 'Fièvre élevée, diarrhée sévère, nausées, vomissements, saignements multiples, éruption cutanée'],
+            ['nom' => 'Virus de Lassa', 'categorie' => 'Virologie', 'description' => 'Fièvre hémorragique endémique en Afrique de l\'Ouest transmise par les rongeurs.', 'symptomes' => 'Fièvre progressive, douleurs thoraciques, maux de gorge, saignements, surdité, choc'],
+            ['nom' => 'Virus Nipah', 'categorie' => 'Virologie', 'description' => 'Zoonose virale émergente transmise par les chauves-souris causant encéphalite et pneumonie.', 'symptomes' => 'Fièvre, maux de tête, vertiges, vomissements, encéphalite, coma, détresse respiratoire'],
+            ['nom' => 'SRAS (SARS-CoV-1)', 'categorie' => 'Virologie', 'description' => 'Syndrome respiratoire aigu sévère causé par un coronavirus apparu en Asie en 2002-2003.', 'symptomes' => 'Fièvre élevée, toux sèche, essoufflement, pneumonie sévère, diarrhée, myalgies'],
+            ['nom' => 'MERS-CoV', 'categorie' => 'Virologie', 'description' => 'Syndrome respiratoire du Moyen-Orient causé par un coronavirus transmis par les dromadaires.', 'symptomes' => 'Fièvre, toux, essoufflement, pneumonie, insuffisance rénale, diarrhée, vomissements'],
+            ['nom' => 'Rage', 'categorie' => 'Virologie', 'description' => 'Encéphalite virale mortelle transmise par la morsure d\'animaux infectés comme les chiens.', 'symptomes' => 'Fièvre, maux de tête, anxiété, confusion, hydrophobie, paralysie, coma, mort'],
+            ['nom' => 'Poliomyélite', 'categorie' => 'Virologie', 'description' => 'Infection virale pouvant causer une paralysie irréversible touchant surtout les enfants.', 'symptomes' => 'Fièvre, fatigue, maux de tête, raideur nuque, douleurs membres, paralysie flasque'],
+            ['nom' => 'Fièvre de la Vallée du Rift', 'categorie' => 'Virologie', 'description' => 'Maladie virale zoonotique touchant animaux et humains en Afrique transmise par moustiques.', 'symptomes' => 'Fièvre, maux de tête, douleurs articulaires, troubles visuels, hémorragies, encéphalite'],
+            ['nom' => 'Chikungunya', 'categorie' => 'Virologie', 'description' => 'Maladie virale transmise par les moustiques Aedes causant des douleurs articulaires intenses.', 'symptomes' => 'Fièvre soudaine, douleurs articulaires sévères, éruption cutanée, maux de tête, fatigue'],
+            ['nom' => 'Zika', 'categorie' => 'Virologie', 'description' => 'Infection virale transmise par moustiques causant microcéphalie chez les nouveaux-nés.', 'symptomes' => 'Fièvre légère, éruption cutanée, conjonctivite, douleurs articulaires, maux de tête'],
+            ['nom' => 'Fièvre West Nile', 'categorie' => 'Virologie', 'description' => 'Maladie virale transmise par les moustiques pouvant causer une encéphalite sévère.', 'symptomes' => 'Fièvre, maux de tête, fatigue, douleurs musculaires, éruption, encéphalite dans les cas graves'],
+            ['nom' => 'Hépatite A', 'categorie' => 'Virologie', 'description' => 'Infection virale du foie transmise par voie féco-orale généralement bénigne et auto-limitée.', 'symptomes' => 'Jaunisse, fatigue, nausées, douleurs abdominales, fièvre, urine foncée, perte d\'appétit'],
+            ['nom' => 'Hépatite E', 'categorie' => 'Virologie', 'description' => 'Infection virale hépatique transmise par l\'eau contaminée fréquente dans les pays en développement.', 'symptomes' => 'Jaunisse, fatigue, nausées, douleurs abdominales, fièvre, urine foncée'],
+            ['nom' => 'Rotavirus', 'categorie' => 'Virologie', 'description' => 'Principale cause de gastroentérite sévère chez l\'enfant causant diarrhée et déshydratation.', 'symptomes' => 'Diarrhée aqueuse sévère, vomissements, fièvre, déshydratation, douleurs abdominales'],
+
+            // BACTÉRIOLOGIE
+            ['nom' => 'Méningite bactérienne', 'categorie' => 'Bactériologie', 'description' => 'Infection bactérienne grave des méninges pouvant être mortelle sans traitement urgent.', 'symptomes' => 'Fièvre élevée, raideur de la nuque, céphalées intenses, photophobie, purpura, vomissements'],
+            ['nom' => 'Septicémie', 'categorie' => 'Bactériologie', 'description' => 'Infection bactérienne généralisée dans le sang constituant une urgence médicale vitale.', 'symptomes' => 'Fièvre ou hypothermie, tachycardie, hypotension, confusion, frissons, détresse respiratoire'],
+            ['nom' => 'Tétanos', 'categorie' => 'Bactériologie', 'description' => 'Maladie bactérienne grave causant des spasmes musculaires violents due à une toxine.', 'symptomes' => 'Contractures musculaires, trismus, raideur de la nuque, spasmes généralisés, fièvre'],
+            ['nom' => 'Salmonellose', 'categorie' => 'Bactériologie', 'description' => 'Infection intestinale bactérienne transmise par des aliments contaminés.', 'symptomes' => 'Diarrhée, fièvre, crampes abdominales, nausées, vomissements, maux de tête'],
+            ['nom' => 'Brucellose', 'categorie' => 'Bactériologie', 'description' => 'Zoonose bactérienne transmise par les animaux domestiques ou produits laitiers non pasteurisés.', 'symptomes' => 'Fièvre ondulante, sueurs nocturnes, fatigue, douleurs articulaires, maux de tête, perte d\'appétit'],
+            ['nom' => 'Rickettsiose', 'categorie' => 'Bactériologie', 'description' => 'Infection bactérienne transmise par les tiques, poux ou puces répandue en Afrique.', 'symptomes' => 'Fièvre, maux de tête, éruption cutanée, escarre d\'inoculation, douleurs musculaires'],
+            ['nom' => 'Leptospirose', 'categorie' => 'Bactériologie', 'description' => 'Infection bactérienne transmise par les urines d\'animaux contaminant l\'eau et le sol.', 'symptomes' => 'Fièvre, maux de tête, douleurs musculaires, jaunisse, insuffisance rénale, hémorragies'],
+            ['nom' => 'Listériose', 'categorie' => 'Bactériologie', 'description' => 'Infection alimentaire bactérienne grave particulièrement dangereuse pour les femmes enceintes.', 'symptomes' => 'Fièvre, douleurs musculaires, nausées, diarrhée, méningite, septicémie, avortement'],
+            ['nom' => 'Campylobactériose', 'categorie' => 'Bactériologie', 'description' => 'Infection intestinale bactérienne fréquente transmise par la volaille mal cuite.', 'symptomes' => 'Diarrhée sanglante, crampes abdominales, fièvre, nausées, vomissements, fatigue'],
+            ['nom' => 'Yersiniose', 'categorie' => 'Bactériologie', 'description' => 'Infection bactérienne digestive transmise par les aliments pouvant simuler une appendicite.', 'symptomes' => 'Douleurs abdominales droites, diarrhée, fièvre, vomissements, ganglions mésentériques'],
+
+            // PARASITOLOGIE
+            ['nom' => 'Amibiase', 'categorie' => 'Parasitologie', 'description' => 'Infection parasitaire intestinale due à Entamoeba histolytica fréquente dans les pays tropicaux.', 'symptomes' => 'Diarrhée sanglante, crampes abdominales, fièvre, nausées, abcès hépatique possible'],
+            ['nom' => 'Giardiase', 'categorie' => 'Parasitologie', 'description' => 'Infection intestinale parasitaire due à Giardia lamblia transmise par l\'eau contaminée.', 'symptomes' => 'Diarrhée graisseuse, ballonnements, crampes abdominales, nausées, fatigue, perte de poids'],
+            ['nom' => 'Toxoplasmose', 'categorie' => 'Parasitologie', 'description' => 'Infection parasitaire due à Toxoplasma gondii dangereuse pour les femmes enceintes.', 'symptomes' => 'Ganglions, fièvre légère, fatigue, douleurs musculaires, troubles visuels chez l\'immunodéprimé'],
+            ['nom' => 'Onchocercose', 'categorie' => 'Parasitologie', 'description' => 'Maladie parasitaire transmise par les simulies causant cécité des rivières en Afrique.', 'symptomes' => 'Démangeaisons intenses, nodules sous-cutanés, lésions oculaires, cécité progressive'],
+            ['nom' => 'Filariose lymphatique', 'categorie' => 'Parasitologie', 'description' => 'Parasitose causant un éléphantiasis par obstruction des vaisseaux lymphatiques.', 'symptomes' => 'Éléphantiasis des membres, gonflement des organes génitaux, fièvre, lymphangite'],
+            ['nom' => 'Ankylostomiase', 'categorie' => 'Parasitologie', 'description' => 'Infection par des vers parasites intestinaux causant une anémie sévère par spoliation sanguine.', 'symptomes' => 'Anémie, fatigue, douleurs abdominales, diarrhée, retard de croissance chez l\'enfant'],
+            ['nom' => 'Ascaridiose', 'categorie' => 'Parasitologie', 'description' => 'Infection par Ascaris lumbricoides ver intestinal très fréquent dans les pays tropicaux.', 'symptomes' => 'Douleurs abdominales, troubles digestifs, toux, fièvre, malnutrition, occlusion intestinale'],
+            ['nom' => 'Taeniase', 'categorie' => 'Parasitologie', 'description' => 'Infection par le ténia ou ver solitaire transmis par la viande de porc ou bœuf mal cuite.', 'symptomes' => 'Douleurs abdominales, perte de poids, nausées, prurit anal, segments dans les selles'],
+            ['nom' => 'Cysticercose', 'categorie' => 'Parasitologie', 'description' => 'Infection par les larves de ténia pouvant envahir le cerveau causant des crises d\'épilepsie.', 'symptomes' => 'Crises d\'épilepsie, maux de tête, troubles neurologiques, nodules sous-cutanés, troubles visuels'],
+            ['nom' => 'Anguillulose', 'categorie' => 'Parasitologie', 'description' => 'Parasitose due à Strongyloides stercoralis pouvant devenir mortelle chez l\'immunodéprimé.', 'symptomes' => 'Démangeaisons cutanées, douleurs abdominales, diarrhée, toux, larva currens'],
+
+            // MALADIES TROPICALES AFRICAINES
+            ['nom' => 'Fièvre typhoïde africaine', 'categorie' => 'Maladies tropicales', 'description' => 'Forme sévère de fièvre typhoïde très fréquente en Afrique subsaharienne.', 'symptomes' => 'Fièvre prolongée, douleurs abdominales, roséole, splénomégalie, confusion, diarrhée'],
+            ['nom' => 'Pian', 'categorie' => 'Maladies tropicales', 'description' => 'Maladie bactérienne chronique affectant la peau et les os répandue en Afrique tropicale.', 'symptomes' => 'Lésions cutanées ulcérantes, douleurs osseuses, déformations faciales, nodules cutanés'],
+            ['nom' => 'Ulcère de Buruli', 'categorie' => 'Maladies tropicales', 'description' => 'Maladie bactérienne causant des ulcères cutanés destructeurs fréquente en Afrique de l\'Ouest.', 'symptomes' => 'Nodule indolore évoluant en ulcère, destruction des tissus, déformations, incapacité'],
+            ['nom' => 'Loase', 'categorie' => 'Maladies tropicales', 'description' => 'Filariose africaine causée par le ver Loa loa transmis par les taons en forêt tropicale.', 'symptomes' => 'Ver visible sous la conjonctive, œdèmes de Calabar, démangeaisons, fatigue, urticaire'],
+            ['nom' => 'Dracunculose', 'categorie' => 'Maladies tropicales', 'description' => 'Parasitose due au ver de Guinée transmis par l\'eau de boisson en voie d\'éradication.', 'symptomes' => 'Cloque douloureuse, émergence d\'un long ver, fièvre, nausées, ulcération cutanée'],
+            ['nom' => 'Fièvre récurrente à tiques', 'categorie' => 'Maladies tropicales', 'description' => 'Infection bactérienne transmise par les tiques molles causant des épisodes fébriles récurrents.', 'symptomes' => 'Fièvre récurrente, maux de tête, douleurs musculaires, jaunisse, saignements, éruption'],
+            ['nom' => 'Noma', 'categorie' => 'Maladies tropicales', 'description' => 'Gangrène faciale dévastatrice affectant les enfants malnutris en Afrique subsaharienne.', 'symptomes' => 'Ulcération gingivale, destruction rapide des tissus faciaux, fièvre, mauvaise haleine'],
+            ['nom' => 'Fièvre de Mayaro', 'categorie' => 'Maladies tropicales', 'description' => 'Maladie virale transmise par les moustiques en Afrique et Amérique du Sud.', 'symptomes' => 'Fièvre, douleurs articulaires intenses, éruption cutanée, maux de tête, fatigue'],
+            ['nom' => 'Maladie à virus de Marburg Afrique', 'categorie' => 'Maladies tropicales', 'description' => 'Fièvre hémorragique rare causée par le virus Marburg avec des foyers en Afrique centrale.', 'symptomes' => 'Fièvre soudaine, malaise, myalgies, céphalées, hémorragies, éruption maculo-papuleuse'],
+            ['nom' => 'Tripanosomiase américaine (Chagas)', 'categorie' => 'Maladies tropicales', 'description' => 'Maladie parasitaire transmise par les punaises des bois touchant l\'Afrique et l\'Amérique.', 'symptomes' => 'Fièvre, gonflement au site de piqûre, fatigue, cardiomyopathie, mégacôlon, mégaœsophage'],
+
+            // MALADIES AUTO-IMMUNES
+            ['nom' => 'Maladie cœliaque', 'categorie' => 'Maladies auto-immunes', 'description' => 'Maladie auto-immune causée par une intolérance au gluten détruisant la muqueuse intestinale.', 'symptomes' => 'Diarrhée chronique, ballonnements, perte de poids, fatigue, anémie, douleurs abdominales'],
+            ['nom' => 'Thyroïdite de Hashimoto', 'categorie' => 'Maladies auto-immunes', 'description' => 'Maladie auto-immune chronique détruisant progressivement la glande thyroïde.', 'symptomes' => 'Fatigue, prise de poids, sensibilité au froid, dépression, goitre, constipation'],
+            ['nom' => 'Maladie de Basedow', 'categorie' => 'Maladies auto-immunes', 'description' => 'Maladie auto-immune stimulant excessivement la thyroïde causant une hyperthyroïdie.', 'symptomes' => 'Palpitations, tremblements, perte de poids, exophtalmie, goitre, nervosité, transpiration'],
+            ['nom' => 'Pemphigus vulgaire', 'categorie' => 'Maladies auto-immunes', 'description' => 'Maladie auto-immune grave causant des bulles cutanées et muqueuses douloureuses.', 'symptomes' => 'Bulles cutanées fragiles, érosions buccales, douleurs intenses, décollement cutané'],
+            ['nom' => 'Myasthénie grave', 'categorie' => 'Maladies auto-immunes', 'description' => 'Maladie neuromusculaire auto-immune causant une faiblesse musculaire fluctuante.', 'symptomes' => 'Faiblesse musculaire fluctuante, ptosis, diplopie, difficultés à avaler, essoufflement'],
+            ['nom' => 'Polymyosite', 'categorie' => 'Maladies auto-immunes', 'description' => 'Maladie inflammatoire auto-immune des muscles causant une faiblesse musculaire progressive.', 'symptomes' => 'Faiblesse musculaire proximale, douleurs musculaires, fatigue, difficultés à avaler, fièvre'],
+            ['nom' => 'Vascularite systémique', 'categorie' => 'Maladies auto-immunes', 'description' => 'Inflammation auto-immune des vaisseaux sanguins pouvant affecter de nombreux organes.', 'symptomes' => 'Fièvre, fatigue, éruptions cutanées, douleurs articulaires, atteinte rénale, troubles neurologiques'],
+            ['nom' => 'Syndrome de Goodpasture', 'categorie' => 'Maladies auto-immunes', 'description' => 'Maladie auto-immune rare attaquant les reins et les poumons simultanément.', 'symptomes' => 'Crachats sanglants, insuffisance rénale rapide, essoufflement, anémie, hypertension'],
+            ['nom' => 'Sarcoïdose systémique', 'categorie' => 'Maladies auto-immunes', 'description' => 'Maladie inflammatoire chronique formant des granulomes dans de nombreux organes.', 'symptomes' => 'Toux sèche, essoufflement, fatigue, ganglions, éruptions cutanées, troubles visuels'],
+            ['nom' => 'Syndrome de Behçet', 'categorie' => 'Maladies auto-immunes', 'description' => 'Vascularite chronique causant des aphtes buccaux et génitaux récidivants et uvéite.', 'symptomes' => 'Aphtes buccaux, ulcères génitaux, uvéite, érythème noueux, arthrite, troubles neurologiques'],
+
+            // MALADIES GÉNÉTIQUES
+            ['nom' => 'Mucoviscidose', 'categorie' => 'Maladies génétiques', 'description' => 'Maladie génétique grave causant une accumulation de mucus épais dans les poumons et organes.', 'symptomes' => 'Toux chronique, infections pulmonaires récurrentes, insuffisance pancréatique, malnutrition'],
+            ['nom' => 'Phénylcétonurie', 'categorie' => 'Maladies génétiques', 'description' => 'Maladie métabolique génétique causant une accumulation de phénylalanine endommageant le cerveau.', 'symptomes' => 'Retard mental si non traité, convulsions, troubles du comportement, eczéma, odeur musty'],
+            ['nom' => 'Maladie de Wilson', 'categorie' => 'Maladies génétiques', 'description' => 'Maladie génétique causant une accumulation de cuivre dans le foie et le cerveau.', 'symptomes' => 'Cirrhose, troubles neurologiques, anneau de Kayser-Fleischer, troubles psychiatriques'],
+            ['nom' => 'Syndrome de Marfan', 'categorie' => 'Maladies génétiques', 'description' => 'Maladie génétique du tissu conjonctif causant des anomalies cardiaques et squelettiques.', 'symptomes' => 'Grande taille, membres longs, scoliose, problèmes cardiaques, luxation du cristallin, aorte dilatée'],
+            ['nom' => 'Neurofibromatose', 'categorie' => 'Maladies génétiques', 'description' => 'Maladie génétique causant des tumeurs bénignes le long des nerfs et taches cutanées.', 'symptomes' => 'Neurofibromes cutanés, taches café au lait, troubles de l\'apprentissage, scoliose, complications neurologiques'],
+            ['nom' => 'Syndrome de Down (Trisomie 21)', 'categorie' => 'Maladies génétiques', 'description' => 'Anomalie chromosomique causant une déficience intellectuelle et des malformations physiques.', 'symptomes' => 'Traits caractéristiques, retard mental, cardiopathie congénitale, hypotonie, petite taille'],
+            ['nom' => 'Dystrophie musculaire de Duchenne', 'categorie' => 'Maladies génétiques', 'description' => 'Maladie génétique grave causant une dégénérescence progressive des muscles chez le garçon.', 'symptomes' => 'Faiblesse musculaire progressive, marche sur la pointe des pieds, chutes fréquentes, scoliose'],
+            ['nom' => 'Maladie de Huntington', 'categorie' => 'Maladies génétiques', 'description' => 'Maladie neurodégénérative génétique causant des mouvements involontaires et démence.', 'symptomes' => 'Mouvements involontaires, troubles cognitifs, changements de personnalité, dépression, démence'],
+            ['nom' => 'Syndrome de Turner', 'categorie' => 'Maladies génétiques', 'description' => 'Anomalie chromosomique féminine causant petite taille et infertilité.', 'symptomes' => 'Petite taille, absence de développement pubertaire, infertilité, malformations cardiaques'],
+            ['nom' => 'Syndrome de Klinefelter', 'categorie' => 'Maladies génétiques', 'description' => 'Anomalie chromosomique masculine causant hypogonadisme et infertilité.', 'symptomes' => 'Grande taille, gynécomastie, petits testicules, infertilité, difficultés d\'apprentissage'],
+
+            // ALLERGOLOGIE
+            ['nom' => 'Allergie alimentaire grave', 'categorie' => 'Allergologie', 'description' => 'Réaction immunitaire sévère à certains aliments pouvant causer un choc anaphylactique.', 'symptomes' => 'Urticaire, gonflement, difficultés respiratoires, chute de pression, vomissements, choc'],
+            ['nom' => 'Choc anaphylactique', 'categorie' => 'Allergologie', 'description' => 'Réaction allergique sévère et soudaine mettant la vie en danger nécessitant une injection d\'adrénaline.', 'symptomes' => 'Difficultés respiratoires soudaines, chute de pression, gonflement, urticaire, perte de conscience'],
+            ['nom' => 'Allergie aux venins', 'categorie' => 'Allergologie', 'description' => 'Hypersensibilité aux venins d\'hyménoptères comme abeilles et guêpes pouvant être mortelle.', 'symptomes' => 'Gonflement local ou généralisé, urticaire, difficultés respiratoires, choc anaphylactique'],
+            ['nom' => 'Allergie aux médicaments', 'categorie' => 'Allergologie', 'description' => 'Réaction immunitaire indésirable à un médicament pouvant aller du simple rash au choc.', 'symptomes' => 'Éruption cutanée, urticaire, gonflement, fièvre, difficultés respiratoires, choc anaphylactique'],
+            ['nom' => 'Syndrome de Lyell', 'categorie' => 'Allergologie', 'description' => 'Nécrolyse épidermique toxique grave souvent médicamenteuse causant un décollement cutané massif.', 'symptomes' => 'Décollement cutané étendu, brûlures, fièvre élevée, lésions muqueuses, atteinte oculaire'],
+            ['nom' => 'Asthme allergique', 'categorie' => 'Allergologie', 'description' => 'Asthme déclenché par des allergènes comme les acariens, pollens ou animaux.', 'symptomes' => 'Sifflements respiratoires, essoufflement, toux nocturne, oppression thoracique, crise dyspnéique'],
+            ['nom' => 'Allergie au latex', 'categorie' => 'Allergologie', 'description' => 'Réaction allergique au caoutchouc naturel fréquente chez le personnel soignant.', 'symptomes' => 'Urticaire au contact, rhinite, asthme, conjonctivite, choc anaphylactique possible'],
+            ['nom' => 'Œdème de Quincke', 'categorie' => 'Allergologie', 'description' => 'Gonflement profond des tissus sous-cutanés pouvant obstruer les voies respiratoires.', 'symptomes' => 'Gonflement du visage, lèvres, gorge, difficultés à avaler, gêne respiratoire, douleurs'],
+            ['nom' => 'Maladie sérique', 'categorie' => 'Allergologie', 'description' => 'Réaction immunitaire complexe survenant après l\'administration de médicaments ou sérums.', 'symptomes' => 'Fièvre, éruption cutanée, douleurs articulaires, gonflement des ganglions, protéinurie'],
+            ['nom' => 'Dermographisme', 'categorie' => 'Allergologie', 'description' => 'Hypersensibilité cutanée où le moindre frottement provoque des marques urticariennes.', 'symptomes' => 'Marques rouges en relief après frottement, démangeaisons, gonflement linéaire transitoire'],
+
+            // MALADIES MÉTABOLIQUES
+            ['nom' => 'Obésité morbide', 'categorie' => 'Métabolisme', 'description' => 'Excès de masse grasse sévère avec IMC supérieur à 40 causant de nombreuses complications.', 'symptomes' => 'IMC très élevé, essoufflement, douleurs articulaires, apnée du sommeil, diabète, hypertension'],
+            ['nom' => 'Syndrome métabolique', 'categorie' => 'Métabolisme', 'description' => 'Association de facteurs de risque cardiovasculaire liés à l\'insulinorésistance.', 'symptomes' => 'Obésité abdominale, hypertension, dyslipidémie, glycémie élevée, résistance à l\'insuline'],
+            ['nom' => 'Dyslipidémie', 'categorie' => 'Métabolisme', 'description' => 'Anomalie du métabolisme des lipides sanguins augmentant le risque cardiovasculaire.', 'symptomes' => 'Souvent asymptomatique, xanthomes, xanthélasmas, douleurs thoraciques, complications cardiovasculaires'],
+            ['nom' => 'Hyperuricémie', 'categorie' => 'Métabolisme', 'description' => 'Élévation anormale du taux d\'acide urique dans le sang pouvant causer la goutte et lithiases.', 'symptomes' => 'Souvent asymptomatique, crises de goutte, lithiases urinaires, tophus, arthrite'],
+            ['nom' => 'Hypoglycémie chronique', 'categorie' => 'Métabolisme', 'description' => 'Baisse récurrente du taux de sucre dans le sang causant des symptômes neurologiques.', 'symptomes' => 'Tremblements, sueurs, palpitations, confusion, faim intense, maux de tête, perte de conscience'],
+            ['nom' => 'Stéatose hépatique non alcoolique', 'categorie' => 'Métabolisme', 'description' => 'Accumulation de graisse dans le foie non liée à l\'alcool souvent associée à l\'obésité.', 'symptomes' => 'Fatigue, gêne abdominale droite, souvent asymptomatique, élévation des enzymes hépatiques'],
+            ['nom' => 'Porphyrie', 'categorie' => 'Métabolisme', 'description' => 'Groupe de maladies métaboliques rares affectant la synthèse de l\'hème causant crises douloureuses.', 'symptomes' => 'Douleurs abdominales sévères, troubles neurologiques, sensibilité au soleil, urines colorées'],
+            ['nom' => 'Acidose lactique', 'categorie' => 'Métabolisme', 'description' => 'Accumulation d\'acide lactique dans le sang causant une acidose métabolique grave.', 'symptomes' => 'Faiblesse musculaire, douleurs abdominales, nausées, vomissements, hyperventilation, confusion'],
+            ['nom' => 'Galactosémie', 'categorie' => 'Métabolisme', 'description' => 'Maladie métabolique génétique empêchant la métabolisation du galactose du lait.', 'symptomes' => 'Jaunisse néonatale, vomissements, hypoglycémie, retard mental, cirrhose, cataractes'],
+            ['nom' => 'Maladie de Gaucher', 'categorie' => 'Métabolisme', 'description' => 'Maladie de surcharge lysosomale causant une accumulation de glucocérébrosides dans les organes.', 'symptomes' => 'Splénomégalie, hépatite, douleurs osseuses, anémie, thrombopénie, fatigue'],
+        ];
+
+        foreach ($pathologies as $data) {
+            Pathologie::create([
+                'nom' => $data['nom'],
+                'categorie' => $data['categorie'],
+                'description' => $data['description'],
+                'symptomes' => $data['symptomes'],
+                'approuve' => true,
+                'user_id' => $user->id,
+            ]);
+        }
+
+        $this->command->info('✅ ' . count($pathologies) . ' pathologies supplémentaires ajoutées !');
+    }
+}

@@ -1,4 +1,5 @@
 FROM php:8.3-apache
+# Cache bust: 2026-04-06-v3
 
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 

@@ -1,11 +1,9 @@
 services:
   - type: web
     name: biolink
-    env: php
+    env: docker
     region: frankfurt
     plan: free
-    buildCommand: chmod +x build.sh && ./build.sh
-    startCommand: php -S 0.0.0.0:$PORT -t public
     envVars:
       - key: APP_NAME
         value: BioLink
@@ -14,7 +12,9 @@ services:
       - key: APP_DEBUG
         value: false
       - key: APP_KEY
-        value: COLLE_TA_CLE_ICI
+        value: base64:4dNqf5vz7dSDdeU1DnCVHQSDagAHihQqgLDs7J8Gt10=
+      - key: APP_URL
+        value: https://biolink.onrender.com
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST

@@ -84,7 +84,7 @@ return [
             ]) : [],
         ],
 
-        'pgsql' => [
+'pgsql' => [
     'driver' => 'pgsql',
     'url' => env('DATABASE_URL'),
     'host' => env('DB_HOST', '127.0.0.1'),
@@ -96,8 +96,8 @@ return [
     'prefix' => '',
     'prefix_indexes' => true,
     'search_path' => 'public',
-    'sslmode' => 'require',
-        ],
+    'sslmode' => 'prefer',
+],
 
         'sqlsrv' => [
             'driver' => 'sqlsrv',

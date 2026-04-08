@@ -49,4 +49,5 @@ ENV PORT=80
 
 RUN php artisan config:clear
 
+# Démarrage Apache
 CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=$PORT"]

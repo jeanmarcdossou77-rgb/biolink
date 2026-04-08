@@ -50,4 +50,4 @@ ENV PORT=80
 # Démarrage Apache
 RUN php artisan config:clear
 
-CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=$PORT"]
+CMD ["sh", "-c", "php -v && php artisan serve --host=0.0.0.0 --port=$PORT"]

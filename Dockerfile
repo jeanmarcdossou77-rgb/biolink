@@ -45,7 +45,9 @@ RUN chown -R www-data:www-data /var/www/html \
 # Exposer le port Apache
 EXPOSE 80
 
-# Démarrage Apache
-CMD php artisan serve --host=0.0.0.0 --port=$PORT
-
 ENV PORT=80
+
+# Démarrage Apache
+RUN php artisan config:clear
+
+CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=$PORT"]

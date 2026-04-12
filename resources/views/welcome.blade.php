@@ -113,6 +113,14 @@
             .grades-timeline { flex-direction: column; gap: 20px; }
             .grades-timeline::before { display: none; }
         }
+
+        <meta name="description" content="BioLink — Découvrez les remèdes naturels pour 336+ pathologies. Plateforme collaborative de science biologique et santé naturelle. Gratuit !">
+<meta name="keywords" content="remèdes naturels, pathologies, santé naturelle, phytothérapie, biologie, paludisme, diabète, Afrique">
+<meta property="og:title" content="BioLink – La science biologique à votre service">
+<meta property="og:description" content="336+ pathologies avec remèdes naturels validés scientifiquement. Communauté mondiale de santé naturelle.">
+<meta property="og:url" content="https://biolink-production-c2ce.up.railway.app">
+<meta property="og:type" content="website">
+<meta name="robots" content="index, follow">
     </style>
 </head>
 <body>

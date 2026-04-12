@@ -121,13 +121,18 @@ Route::get('/feed', [App\Http\Controllers\PostController::class, 'index'])->midd
 
 Route::get('/sitemap.xml', function() {
     $pathologies = \App\Models\Pathologie::where('approuve', true)->get();
+    $base = 'https://biolink-production-c2ce.up.railway.app';
     $content = '<?xml version="1.0" encoding="UTF-8"?>';
     $content .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-    $content .= '<url><loc>https://biolink-production-c2ce.up.railway.app</loc><changefreq>daily</changefreq><priority>1.0</priority></url>';
-    $content .= '<url><loc>https://biolink-production-c2ce.up.railway.app/recherche</loc><changefreq>daily</changefreq><priority>0.9</priority></url>';
+    $content .= '<url><loc>'.$base.'</loc><changefreq>daily</changefreq><priority>1.0</priority></url>';
+    $content .= '<url><loc>'.$base.'/recherche</loc><changefreq>daily</changefreq><priority>0.9</priority></url>';
+    $content .= '<url><loc>'.$base.'/ia</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>';
+    $content .= '<url><loc>'.$base.'/jobs</loc><changefreq>daily</changefreq><priority>0.8</priority></url>';
+    $content .= '<url><loc>'.$base.'/premium</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>';
+    $content .= '<url><loc>'.$base.'/aide</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>';
     foreach ($pathologies as $p) {
-        $content .= '<url><loc>https://biolink-production-c2ce.up.railway.app/pathologies/'.$p->id.'</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>';
+        $content .= '<url><loc>'.$base.'/pathologies/'.$p->id.'</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>';
     }
     $content .= '</urlset>';
-    return response($content, 200)->header('Content-Type', 'text/xml');
+    return response($content)->header('Content-Type', 'text/xml');
 });

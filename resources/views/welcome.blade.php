@@ -4,7 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BioLink – La science biologique à votre service</title>
-    <meta name="description" content="Découvrez les soins naturels personnalisés selon votre pathologie. BioLink — plateforme collaborative de santé naturelle.">
+    <meta name="description" content="BioLink — Découvrez les remèdes naturels pour 336+ pathologies. Plateforme collaborative de science biologique et santé naturelle. 100% Gratuit !">
+    <meta name="keywords" content="remèdes naturels, pathologies, santé naturelle, phytothérapie, biologie, paludisme, diabète, Afrique, Bénin, BioLink">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="DOSSOU Jean-Marc">
+    <meta property="og:title" content="BioLink – La science biologique à votre service">
+    <meta property="og:description" content="336+ pathologies avec remèdes naturels validés. Communauté mondiale de santé naturelle. Gratuit !">
+    <meta property="og:url" content="https://biolink-production-c2ce.up.railway.app">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://biolink-production-c2ce.up.railway.app/images/biolink-preview.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="BioLink – Santé naturelle">
+    <meta name="twitter:description" content="336+ pathologies et remèdes naturels validés scientifiquement.">
+    <link rel="canonical" href="https://biolink-production-c2ce.up.railway.app">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: #0a1628; color: white; }
@@ -113,14 +125,6 @@
             .grades-timeline { flex-direction: column; gap: 20px; }
             .grades-timeline::before { display: none; }
         }
-
-        <meta name="description" content="BioLink — Découvrez les remèdes naturels pour 336+ pathologies. Plateforme collaborative de science biologique et santé naturelle. Gratuit !">
-<meta name="keywords" content="remèdes naturels, pathologies, santé naturelle, phytothérapie, biologie, paludisme, diabète, Afrique">
-<meta property="og:title" content="BioLink – La science biologique à votre service">
-<meta property="og:description" content="336+ pathologies avec remèdes naturels validés scientifiquement. Communauté mondiale de santé naturelle.">
-<meta property="og:url" content="https://biolink-production-c2ce.up.railway.app">
-<meta property="og:type" content="website">
-<meta name="robots" content="index, follow">
     </style>
 </head>
 <body>
@@ -327,7 +331,8 @@
             <div class="footer-title">Contact</div>
             <ul class="footer-links">
                 <li><a href="#">📧 contact@biolink.com</a></li>
-                <li><a href="#">📱 WhatsApp</a></li>
+                <li><a href="https://wa.me/22962976186" target="_blank">📱 WhatsApp +229 62 97 61 86</a></li>
+                <li><a href="mailto:jeanmarcdossou77@gmail.com">📧 jeanmarcdossou77@gmail.com</a></li>
                 <li><a href="#">🌍 Partenariats</a></li>
                 <li><a href="#">📜 À propos</a></li>
             </ul>

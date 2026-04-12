@@ -1,0 +1,56 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use App\Models\Remede;
+use App\Models\Pathologie;
+use App\Models\User;
+
+class RemedeSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $user = User::first();
+
+        $remedes = [
+            ['pathologie' => 'Diabète de type 2', 'titre' => 'Décoction de feuilles de moringa', 'description' => 'Le moringa est reconnu pour ses propriétés hypoglycémiantes naturelles. Très efficace pour réguler la glycémie.', 'ingredients' => '50g de feuilles de moringa fraîches, 1L d\'eau propre, 1 cuillère de miel naturel', 'preparation' => '1. Laver soigneusement les feuilles de moringa\n2. Faire bouillir 1L d\'eau\n3. Ajouter les feuilles et laisser bouillir 10 minutes\n4. Filtrer et laisser refroidir\n5. Ajouter le miel\n6. Boire 2 verres par jour matin et soir', 'type' => 'phytotherapie', 'sexe' => 'tous', 'age_min' => 15, 'age_max' => 80],
+            ['pathologie' => 'Diabète de type 2', 'titre' => 'Cannelle et fenugrec contre le diabète', 'description' => 'La cannelle et le fenugrec sont des remèdes traditionnels très efficaces pour réduire le taux de sucre dans le sang.', 'ingredients' => '1 cuillère à café de cannelle en poudre, 1 cuillère à café de graines de fenugrec, 250ml d\'eau chaude', 'preparation' => '1. Faire tremper le fenugrec dans l\'eau froide toute la nuit\n2. Le matin filtrer et ajouter la cannelle\n3. Boire à jeun chaque matin\n4. Continuer pendant 3 mois minimum', 'type' => 'naturel', 'sexe' => 'tous', 'age_min' => 18, 'age_max' => 75],
+            ['pathologie' => 'Hypertension artérielle', 'titre' => 'Tisane d\'ail et de citron', 'description' => 'L\'ail est un puissant antihypertenseur naturel qui dilate les vaisseaux sanguins et réduit la pression artérielle.', 'ingredients' => '3 gousses d\'ail frais, 1 citron, 1L d\'eau, 1 cuillère de miel', 'preparation' => '1. Écraser les gousses d\'ail\n2. Faire bouillir l\'eau et ajouter l\'ail écrasé\n3. Laisser infuser 15 minutes\n4. Filtrer et ajouter le jus de citron et le miel\n5. Boire 1 verre matin et soir\n6. Éviter le sel en parallèle', 'type' => 'naturel', 'sexe' => 'tous', 'age_min' => 18, 'age_max' => 80],
+            ['pathologie' => 'Hypertension artérielle', 'titre' => 'Infusion d\'hibiscus (Bissap)', 'description' => 'L\'hibiscus est scientifiquement prouvé pour réduire la pression artérielle. Très populaire en Afrique de l\'Ouest.', 'ingredients' => '2 cuillères de fleurs d\'hibiscus séchées, 500ml d\'eau, Miel au goût', 'preparation' => '1. Porter l\'eau à ébullition\n2. Ajouter les fleurs d\'hibiscus\n3. Laisser infuser 10 minutes hors du feu\n4. Filtrer et sucrer avec du miel\n5. Boire 2 tasses par jour\n6. Éviter si grossesse', 'type' => 'phytotherapie', 'sexe' => 'tous', 'age_min' => 15, 'age_max' => 80],
+            ['pathologie' => 'Paludisme', 'titre' => 'Décoction d\'Artemisia annua', 'description' => 'L\'Artemisia annua (armoise annuelle) contient de l\'artémisinine, principe actif antipaludéen reconnu mondialement.', 'ingredients' => '50g de feuilles d\'Artemisia annua séchées, 1L d\'eau, Miel', 'preparation' => '1. Faire bouillir l\'eau\n2. Ajouter les feuilles d\'Artemisia\n3. Laisser bouillir 5 minutes puis infuser 10 minutes\n4. Filtrer soigneusement\n5. Boire 3 tasses par jour pendant 7 jours\n6. Consulter un médecin en parallèle', 'type' => 'phytotherapie', 'sexe' => 'tous', 'age_min' => 5, 'age_max' => 80],
+            ['pathologie' => 'Paludisme', 'titre' => 'Jus de feuilles de papaye', 'description' => 'Les feuilles de papaye augmentent les plaquettes et ont des propriétés antipaludéennes reconnues en médecine traditionnelle africaine.', 'ingredients' => '5 feuilles de papaye fraîches, 1 verre d\'eau', 'preparation' => '1. Laver soigneusement les feuilles de papaye\n2. Mixer avec l\'eau\n3. Filtrer et extraire le jus\n4. Boire 2 cuillères à soupe 3 fois par jour\n5. Ne pas dépasser la dose\n6. Déconseillé aux femmes enceintes', 'type' => 'naturel', 'sexe' => 'tous', 'age_min' => 5, 'age_max' => 75],
+            ['pathologie' => 'Anémie', 'titre' => 'Jus de betterave et épinards', 'description' => 'La betterave et les épinards sont riches en fer et acide folique, essentiels pour combattre l\'anémie naturellement.', 'ingredients' => '2 betteraves moyennes, 100g d\'épinards frais, 1 citron, Miel', 'preparation' => '1. Laver et peler les betteraves\n2. Mixer betteraves et épinards avec un peu d\'eau\n3. Filtrer et ajouter le jus de citron\n4. Sucrer avec du miel\n5. Boire 1 grand verre chaque matin à jeun\n6. Associer avec une alimentation riche en vitamine C', 'type' => 'alimentation', 'sexe' => 'tous', 'age_min' => 5, 'age_max' => 80],
+            ['pathologie' => 'Anémie', 'titre' => 'Poudre de spiruline au moringa', 'description' => 'La spiruline est l\'aliment le plus riche en protéines et fer biodisponible. Associée au moringa, elle combat efficacement l\'anémie.', 'ingredients' => '1 cuillère de spiruline en poudre, 1 cuillère de poudre de moringa, 1 verre de jus d\'orange', 'preparation' => '1. Mélanger la spiruline et le moringa dans le jus d\'orange\n2. Bien remuer jusqu\'à dissolution\n3. Boire immédiatement\n4. Prendre chaque matin\n5. Cure de 3 mois minimum\n6. Augmenter progressivement les doses', 'type' => 'alimentation', 'sexe' => 'tous', 'age_min' => 3, 'age_max' => 80],
+            ['pathologie' => 'Migraine', 'titre' => 'Huile essentielle de menthe poivrée', 'description' => 'La menthe poivrée appliquée sur les tempes soulage rapidement les migraines grâce au menthol qui refroidit et anesthésie.', 'ingredients' => 'Huile essentielle de menthe poivrée pure, Huile végétale de coco ou amande douce', 'preparation' => '1. Diluer 2 gouttes d\'HE menthe dans 1 cuillère d\'huile végétale\n2. Appliquer sur les tempes et le front\n3. Masser doucement en cercles\n4. Éviter le contact avec les yeux\n5. Respirer profondément\n6. Répéter toutes les 30 minutes si nécessaire', 'type' => 'aromatherapie', 'sexe' => 'tous', 'age_min' => 12, 'age_max' => 80],
+            ['pathologie' => 'Insomnie', 'titre' => 'Tisane de valériane et passiflore', 'description' => 'La valériane et la passiflore sont les plantes sédatives les plus efficaces pour favoriser un sommeil naturel et réparateur.', 'ingredients' => '1 cuillère de racine de valériane séchée, 1 cuillère de fleurs de passiflore, 250ml d\'eau bouillante, Miel', 'preparation' => '1. Faire bouillir l\'eau\n2. Verser sur les plantes dans une tasse\n3. Couvrir et laisser infuser 15 minutes\n4. Filtrer et ajouter le miel\n5. Boire 30 minutes avant le coucher\n6. Éviter l\'alcool et les écrans après', 'type' => 'phytotherapie', 'sexe' => 'tous', 'age_min' => 12, 'age_max' => 80],
+            ['pathologie' => 'Gastrite', 'titre' => 'Gel d\'aloe vera et miel de Manuka', 'description' => 'L\'aloe vera cicatrise la muqueuse gastrique irritée tandis que le miel de Manuka élimine Helicobacter pylori naturellement.', 'ingredients' => '2 cuillères à soupe de gel d\'aloe vera pur, 1 cuillère de miel de Manuka, 100ml d\'eau tiède', 'preparation' => '1. Extraire le gel d\'une feuille d\'aloe vera\n2. Mixer avec l\'eau tiède\n3. Ajouter le miel de Manuka\n4. Bien mélanger\n5. Boire 20 minutes avant chaque repas\n6. Éviter les aliments épicés et l\'alcool', 'type' => 'naturel', 'sexe' => 'tous', 'age_min' => 15, 'age_max' => 80],
+            ['pathologie' => 'Eczéma', 'titre' => 'Bain à l\'avoine et huile de coco', 'description' => 'L\'avoine colloïdale calme les démangeaisons et restaure la barrière cutanée. L\'huile de coco hydrate et protège la peau.', 'ingredients' => '200g d\'avoine fine, 3 cuillères d\'huile de coco vierge, Eau tiède', 'preparation' => '1. Mixer l\'avoine en poudre fine\n2. Verser dans un bain d\'eau tiède\n3. Se tremper 20 minutes\n4. Sécher doucement sans frotter\n5. Appliquer l\'huile de coco sur les zones touchées\n6. Répéter 3 fois par semaine', 'type' => 'naturel', 'sexe' => 'tous', 'age_min' => 1, 'age_max' => 80],
+            ['pathologie' => 'COVID-19', 'titre' => 'Protocole immunitaire naturel anti-COVID', 'description' => 'Association de plantes et nutriments prouvés pour renforcer l\'immunité et réduire les symptômes du COVID-19.', 'ingredients' => 'Zinc 15mg, Vitamine C 1000mg, Vitamine D3 2000UI, Gingembre frais, Ail cru, Miel noir, Propolis', 'preparation' => '1. Prendre zinc et vitamines le matin au petit-déjeuner\n2. Préparer une décoction : bouillir gingembre râpé + ail écrasé 10 min\n3. Filtrer et ajouter miel et propolis\n4. Boire 3 tasses par jour\n5. Rester hydraté et se reposer\n6. Consulter un médecin si symptômes graves', 'type' => 'naturel', 'sexe' => 'tous', 'age_min' => 12, 'age_max' => 80],
+            ['pathologie' => 'Drépanocytose', 'titre' => 'Feuilles de Cajanus cajan (niébé)', 'description' => 'Les feuilles de Cajanus cajan sont utilisées traditionnellement en Afrique pour réduire les crises drépanocytaires et améliorer l\'hémoglobine.', 'ingredients' => 'Une poignée de feuilles de Cajanus cajan fraîches, 1L d\'eau, Miel', 'preparation' => '1. Laver soigneusement les feuilles\n2. Faire bouillir dans 1L d\'eau pendant 15 minutes\n3. Laisser refroidir et filtrer\n4. Ajouter du miel\n5. Boire 2 verres par jour matin et soir\n6. En traitement de fond continu', 'type' => 'traditionnel', 'sexe' => 'tous', 'age_min' => 2, 'age_max' => 60],
+            ['pathologie' => 'Asthme', 'titre' => 'Vapeur d\'eucalyptus et thym', 'description' => 'L\'eucalyptus et le thym sont des bronchodilatateurs naturels qui soulagent les voies respiratoires et réduisent les crises d\'asthme.', 'ingredients' => '10 gouttes d\'huile essentielle d\'eucalyptus, 1 bouquet de thym frais, 1L d\'eau bouillante', 'preparation' => '1. Faire bouillir l\'eau\n2. Ajouter le thym et l\'HE d\'eucalyptus\n3. Se pencher sur la casserole avec une serviette sur la tête\n4. Respirer les vapeurs pendant 10 minutes\n5. Répéter 2 fois par jour\n6. Éviter si allergie aux huiles essentielles', 'type' => 'aromatherapie', 'sexe' => 'tous', 'age_min' => 6, 'age_max' => 75],
+        ];
+
+        foreach ($remedes as $data) {
+            $pathologie = Pathologie::where('nom', $data['pathologie'])->first();
+            if ($pathologie) {
+                Remede::create([
+                    'titre' => $data['titre'],
+                    'description' => $data['description'],
+                    'ingredients' => $data['ingredients'],
+                    'preparation' => $data['preparation'],
+                    'type' => $data['type'],
+                    'sexe' => $data['sexe'],
+                    'age_min' => $data['age_min'],
+                    'age_max' => $data['age_max'],
+                    'pathologie_id' => $pathologie->id,
+                    'user_id' => $user->id,
+                    'approuve' => true,
+                    'votes' => rand(10, 100),
+                ]);
+            }
+        }
+
+        $this->command->info('✅ ' . count($remedes) . ' remèdes naturels ajoutés !');
+    }
+}

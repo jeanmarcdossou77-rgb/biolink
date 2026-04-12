@@ -30,6 +30,58 @@ class User extends Authenticatable
         return $this->hasMany(Remede::class);
     }
 
+    public function posts()
+{
+    return $this->hasMany(Post::class);
+}
+
+public function comments()
+{
+    return $this->hasMany(Comment::class);
+}
+
+public function sentMessages()
+{
+    return $this->hasMany(Message::class, 'sender_id');
+}
+
+public function receivedMessages()
+{
+    return $this->hasMany(Message::class, 'receiver_id');
+}
+
+public function friendships()
+{
+    return $this->hasMany(Friendship::class);
+}
+
+public function friends()
+{
+    return $this->friendships()->where('status', 'accepted');
+}
+
+public function groupMemberships()
+{
+    return $this->hasMany(GroupMember::class);
+}
+
+public function isFriendWith($userId)
+{
+    return Friendship::where(function($q) use ($userId) {
+        $q->where('user_id', auth()->id())->where('friend_id', $userId);
+    })->orWhere(function($q) use ($userId) {
+        $q->where('user_id', $userId)->where('friend_id', auth()->id());
+    })->where('status', 'accepted')->exists();
+}
+
+public function hasPendingRequestWith($userId)
+{
+    return Friendship::where('user_id', auth()->id())
+        ->where('friend_id', $userId)
+        ->where('status', 'pending')
+        ->exists();
+}
+
     public function pathologies()
     {
         return $this->hasMany(Pathologie::class);

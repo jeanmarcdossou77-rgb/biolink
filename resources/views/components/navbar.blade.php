@@ -67,54 +67,82 @@
 </style>
 
 <nav class="biolink-nav">
-    <a href="/" class="nav-logo">Bio<span>Link</span></a>
+    <a href="/" class="nav-logo">
+    <svg width="32" height="32" viewBox="0 0 32 32" style="vertical-align:middle; margin-right:6px;">
+        <defs>
+            <linearGradient id="djmGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#00e5a0"/>
+                <stop offset="100%" style="stop-color:#378ADD"/>
+            </linearGradient>
+        </defs>
+        <text x="2" y="24" font-family="serif" font-size="20" font-weight="bold" fill="url(#djmGrad)">D</text>
+        <text x="10" y="20" font-family="serif" font-size="16" font-weight="bold" fill="url(#djmGrad)" opacity="0.8">J</text>
+        <text x="18" y="28" font-family="serif" font-size="20" font-weight="bold" fill="url(#djmGrad)">M</text>
+        <path d="M8 26 Q16 16 24 6" stroke="url(#djmGrad)" stroke-width="1" fill="none" opacity="0.4"/>
+    </svg>
+    Bio<span>Link</span>
+</a>
 
     <div class="nav-links">
-        <a href="/recherche" class="nav-link">🔬 Pathologies</a>
-        <a href="/ia" class="nav-link">🤖 IA</a>
-        <a href="/jobs" class="nav-link">💼 Emplois</a>
+    <a href="/recherche" class="nav-link">🔬 Pathologies</a>
+    <a href="/feed" class="nav-link">📱 Fil</a>
+    <a href="/groups" class="nav-link">👥 Groupes</a>
+    <a href="/ia" class="nav-link">🤖 IA</a>
+    <a href="/jobs" class="nav-link">💼 Emplois</a>
+    <a href="/aide" class="nav-link">❓ Aide</a>
 
-        @auth
-            <a href="/notifications" class="notif-btn" title="Notifications">
-                🔔
-                <span class="notif-count" id="notifCount" style="display:none">0</span>
-            </a>
+    @auth
+        <a href="/messages" class="notif-btn" title="Messages">💬
+            <span class="notif-count" id="msgCount" style="display:none">0</span>
+        </a>
+        <a href="/notifications" class="notif-btn" title="Notifications">🔔
+            <span class="notif-count" id="notifCount" style="display:none">0</span>
+        </a>
 
-            @if(Auth::user()->is_admin)
-                <a href="/admin" class="nav-link" style="color:#ffa500;">👑 Admin</a>
-            @endif
+        @if(Auth::user()->is_admin)
+            <a href="/admin" class="nav-link" style="color:#ffa500;">👑 Admin</a>
+        @endif
 
-            <div class="dropdown">
-                <div class="nav-link" style="cursor:pointer; gap:8px;">
-                    <div class="avatar-nav">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
-                    {{ explode(' ', Auth::user()->name)[0] }}
-                    @if(Auth::user()->is_premium)
-                        <span class="premium-badge-nav">★ PRO</span>
+        <div class="dropdown">
+            <div class="nav-link" style="cursor:pointer; gap:8px;">
+                <div class="avatar-nav">
+                    @if(Auth::user()->photo_profil)
+                        <img src="{{ Storage::url(Auth::user()->photo_profil) }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="">
+                    @else
+                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                     @endif
-                    ▾
                 </div>
-                <div class="dropdown-menu">
-                    <a href="/dashboard" class="dropdown-item">🏠 Dashboard</a>
-                    <a href="/profil" class="dropdown-item">👤 Mon profil</a>
-                    <a href="/remedes/create" class="dropdown-item">🌿 Publier un remède</a>
-                    <a href="/notifications" class="dropdown-item">🔔 Notifications</a>
-                    @if(!Auth::user()->is_premium)
-                        <a href="/premium" class="dropdown-item" style="color:#ffa500;">🌟 Passer Premium</a>
-                    @endif
-                    <hr class="dropdown-divider">
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="dropdown-item" style="width:100%; background:none; border:none; cursor:pointer; text-align:left;">
-                            🚪 Déconnexion
-                        </button>
-                    </form>
-                </div>
+                {{ explode(' ', Auth::user()->name)[0] }}
+                @if(Auth::user()->is_premium)
+                    <span class="premium-badge-nav">★ PRO</span>
+                @endif
+                ▾
             </div>
-        @else
-            <a href="/login" class="nav-link">Se connecter</a>
-            <a href="/register" class="nav-btn">Rejoindre BioLink</a>
-        @endauth
-    </div>
+            <div class="dropdown-menu">
+                <a href="/dashboard" class="dropdown-item">🏠 Dashboard</a>
+                <a href="/feed" class="dropdown-item">📱 Fil d'actualité</a>
+                <a href="/profil" class="dropdown-item">👤 Mon profil</a>
+                <a href="/friends/requests" class="dropdown-item">👥 Demandes d'amis</a>
+                <a href="/messages" class="dropdown-item">💬 Messages</a>
+                <a href="/remedes/create" class="dropdown-item">🌿 Publier un remède</a>
+                <a href="/notifications" class="dropdown-item">🔔 Notifications</a>
+                @if(!Auth::user()->is_premium)
+                    <a href="/premium" class="dropdown-item" style="color:#ffa500;">🌟 Passer Premium</a>
+                @endif
+                <hr class="dropdown-divider">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="dropdown-item" style="width:100%; background:none; border:none; cursor:pointer; text-align:left; color:rgba(255,80,80,0.8);">
+                        🚪 Déconnexion
+                    </button>
+                </form>
+            </div>
+        </div>
+    @else
+        <a href="/login" class="nav-link">Se connecter</a>
+        <a href="/register" class="nav-btn">Rejoindre BioLink</a>
+    @endauth
+</div>
 </nav>
 
 @auth

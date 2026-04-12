@@ -79,3 +79,42 @@ use App\Http\Controllers\PremiumController;
 
 Route::get('/premium', [PremiumController::class, 'index'])->name('premium');
 Route::post('/premium/activer', [PremiumController::class, 'activer'])->middleware('auth')->name('premium.activer');
+
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\FriendshipController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\GroupController;
+
+Route::middleware('auth')->group(function () {
+    // Fil d'actualité
+    Route::get('/feed', [PostController::class, 'index'])->name('feed');
+    Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+    Route::delete('/posts/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
+    Route::post('/posts/{id}/like', [PostController::class, 'like'])->name('posts.like');
+    Route::post('/posts/{id}/comment', [PostController::class, 'comment'])->name('posts.comment');
+
+    // Amis
+    Route::post('/friends/request/{userId}', [FriendshipController::class, 'sendRequest'])->name('friends.request');
+    Route::post('/friends/accept/{id}', [FriendshipController::class, 'accept'])->name('friends.accept');
+    Route::post('/friends/reject/{id}', [FriendshipController::class, 'reject'])->name('friends.reject');
+    Route::get('/friends/requests', [FriendshipController::class, 'requests'])->name('friends.requests');
+
+    // Messages
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages');
+    Route::get('/messages/{userId}', [MessageController::class, 'conversation'])->name('messages.conversation');
+    Route::post('/messages/{userId}/send', [MessageController::class, 'send'])->name('messages.send');
+
+    // Groupes
+    Route::get('/groups', [GroupController::class, 'index'])->name('groups');
+    Route::get('/groups/create', [GroupController::class, 'create'])->name('groups.create');
+    Route::post('/groups', [GroupController::class, 'store'])->name('groups.store');
+    Route::get('/groups/{id}', [GroupController::class, 'show'])->name('groups.show');
+    Route::post('/groups/{id}/join', [GroupController::class, 'join'])->name('groups.join');
+    Route::post('/groups/{id}/leave', [GroupController::class, 'leave'])->name('groups.leave');
+
+    // Admin messages
+    Route::get('/admin/messages', [MessageController::class, 'adminView'])->name('admin.messages');
+});
+
+Route::get('/aide', function() { return view('aide'); })->name('aide');
+Route::get('/feed', [App\Http\Controllers\PostController::class, 'index'])->middleware('auth')->name('feed');

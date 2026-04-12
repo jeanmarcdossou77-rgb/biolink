@@ -16,6 +16,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="BioLink – Santé naturelle">
     <meta name="twitter:description" content="336+ pathologies et remèdes naturels validés scientifiquement.">
+    <meta name="google-site-verification" content="qZ4S58ZmQ3sbg8VB7VYCAJwG2yU5poyx4FPWhHLsdz8" />
     <link rel="canonical" href="https://biolink-production-c2ce.up.railway.app">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }

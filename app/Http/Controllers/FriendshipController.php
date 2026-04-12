@@ -22,17 +22,15 @@ class FriendshipController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', '✅ Demande d\'ami envoyée !');
+        return redirect()->back()->with('success', '✅ Demande envoyée !');
     }
 
     public function accept($id)
     {
         $friendship = Friendship::findOrFail($id);
         $friendship->update(['status' => 'accepted']);
-
         Auth::user()->increment('amis_count');
         $friendship->user->increment('amis_count');
-
         return redirect()->back()->with('success', '✅ Ami accepté !');
     }
 
@@ -49,6 +47,10 @@ class FriendshipController extends Controller
             ->with('user')
             ->get();
 
-        return view('social.friend-requests', compact('requests'));
+        $allUsers = User::where('id', '!=', Auth::id())
+            ->orderBy('points', 'desc')
+            ->get();
+
+        return view('social.friend-requests', compact('requests', 'allUsers'));
     }
 }

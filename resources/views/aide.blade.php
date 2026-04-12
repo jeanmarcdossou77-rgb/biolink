@@ -192,7 +192,7 @@
             <div style="font-size:14px; color:rgba(255,255,255,0.6);">Responsable & Fondateur de BioLink</div>
         </div>
         <div class="contact-buttons">
-            <a href="https://wa.me/22900000000" target="_blank" class="btn-whatsapp">📱 WhatsApp</a>
+            <a href="https://wa.me/22962976186" target="_blank" class="btn-whatsapp">📱 WhatsApp</a>
             <a href="mailto:jeanmarcdossou77@gmail.com" class="btn-email">📧 Email</a>
         </div>
     </div>

@@ -299,7 +299,7 @@
             <div style="font-size:13px; color:rgba(255,255,255,0.8); margin-bottom:12px;">
                 Contactez le responsable BioLink :
             </div>
-            <a href="https://wa.me/22900000000" target="_blank" style="display:flex; align-items:center; gap:8px; color:#25D366; text-decoration:none; font-size:14px; font-weight:600; margin-bottom:8px;">
+            <a href="https://wa.me/22962976186" target="_blank" style="display:flex; align-items:center; gap:8px; color:#25D366; text-decoration:none; font-size:14px; font-weight:600; margin-bottom:8px;">
                 📱 WhatsApp
             </a>
             <a href="mailto:jeanmarcdossou77@gmail.com" style="display:flex; align-items:center; gap:8px; color:#00e5a0; text-decoration:none; font-size:13px;">

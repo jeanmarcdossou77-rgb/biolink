@@ -11,18 +11,40 @@ class MessageController extends Controller
 {
     public function index()
     {
-        $conversations = Message::where('sender_id', Auth::id())
+        $userIds = Message::where('sender_id', Auth::id())
             ->orWhere('receiver_id', Auth::id())
-            ->with(['sender', 'receiver'])
-            ->latest()
             ->get()
-            ->groupBy(function($msg) {
+            ->map(function($msg) {
                 return $msg->sender_id == Auth::id()
                     ? $msg->receiver_id
                     : $msg->sender_id;
-            });
+            })
+            ->unique()
+            ->values();
 
-        $users = User::where('id', '!=', Auth::id())->get();
+        $conversations = collect();
+        foreach ($userIds as $userId) {
+            $lastMsg = Message::where(function($q) use ($userId) {
+                $q->where('sender_id', Auth::id())->where('receiver_id', $userId);
+            })->orWhere(function($q) use ($userId) {
+                $q->where('sender_id', $userId)->where('receiver_id', Auth::id());
+            })->latest()->first();
+
+            if ($lastMsg) {
+                $otherUser = User::find($userId);
+                $conversations->push([
+                    'user' => $otherUser,
+                    'lastMsg' => $lastMsg,
+                    'unread' => Message::where('sender_id', $userId)
+                        ->where('receiver_id', Auth::id())
+                        ->where('lu', false)->count()
+                ]);
+            }
+        }
+
+        $users = User::where('id', '!=', Auth::id())
+            ->orderBy('name')
+            ->get();
 
         return view('social.messages', compact('conversations', 'users'));
     }
@@ -41,7 +63,11 @@ class MessageController extends Controller
             ->where('receiver_id', Auth::id())
             ->update(['lu' => true]);
 
-        return view('social.conversation', compact('messages', 'otherUser'));
+        $users = User::where('id', '!=', Auth::id())
+            ->orderBy('name')
+            ->get();
+
+        return view('social.conversation', compact('messages', 'otherUser', 'users'));
     }
 
     public function send(Request $request, $userId)
@@ -68,11 +94,8 @@ class MessageController extends Controller
     public function adminView()
     {
         if (!Auth::user()->is_admin) abort(403);
-
         $conversations = Message::with(['sender', 'receiver'])
-            ->latest()
-            ->paginate(50);
-
+            ->latest()->paginate(50);
         return view('admin.messages', compact('conversations'));
     }
 }

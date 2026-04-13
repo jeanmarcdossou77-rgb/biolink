@@ -136,3 +136,5 @@ Route::get('/sitemap.xml', function() {
     $content .= '</urlset>';
     return response($content)->header('Content-Type', 'text/xml');
 });
+
+Route::get('/privacy', function() { return view('privacy'); })->name('privacy');

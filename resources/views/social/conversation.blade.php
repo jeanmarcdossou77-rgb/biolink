@@ -27,6 +27,9 @@
         .chat-input { flex: 1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); border-radius: 25px; padding: 12px 20px; color: white; font-size: 15px; outline: none; }
         .chat-input:focus { border-color: #00e5a0; }
         .send-btn { background: #00e5a0; border: none; color: #0a1628; width: 46px; height: 46px; border-radius: 50%; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+        .chat-conv-item { display:flex; align-items:center; gap:10px; padding:10px 14px; text-decoration:none; color:white; border-bottom:1px solid rgba(255,255,255,0.05); transition:background 0.2s; }
+        .chat-conv-item:hover { background:rgba(255,255,255,0.05); }
+        .chat-conv-item.active { background:rgba(0,229,160,0.1); border-left:3px solid #00e5a0; }
     </style>
 </head>
 <body>
@@ -35,9 +38,25 @@
 
 <div class="chat-layout">
     <div class="conversations-list">
-        <div class="conv-header">💬 Messages</div>
-        <a href="/messages" style="display:block; padding:14px 16px; color:rgba(255,255,255,0.7); text-decoration:none; font-size:14px; border-bottom:1px solid rgba(255,255,255,0.05);">← Retour aux conversations</a>
-    </div>
+    <div class="conv-header">💬 Messages</div>
+    <a href="/messages" style="display:block; padding:12px 16px; color:rgba(255,255,255,0.7); text-decoration:none; font-size:14px; border-bottom:1px solid rgba(255,255,255,0.05);">← Toutes les conversations</a>
+
+    @foreach($users->take(15) as $user)
+    <a href="/messages/{{ $user->id }}" class="chat-conv-item {{ $user->id == $otherUser->id ? 'active' : '' }}">
+        <div class="chat-avatar" style="width:36px;height:36px;font-size:14px;flex-shrink:0;">
+            @if($user->photo_profil)
+                <img src="{{ Storage::url($user->photo_profil) }}" alt="">
+            @else
+                {{ strtoupper(substr($user->name, 0, 1)) }}
+            @endif
+        </div>
+        <div>
+            <div style="font-size:13px; font-weight:600;">{{ $user->name }}</div>
+            <div style="font-size:11px; color:#00e5a0;">{{ $user->nom_grade['emoji'] }}</div>
+        </div>
+    </a>
+    @endforeach
+</div>
 
     <div class="chat-area">
         <div class="chat-header">

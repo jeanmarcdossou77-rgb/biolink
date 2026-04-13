@@ -64,6 +64,8 @@
 }
 .dropdown-item:hover { background: rgba(255,255,255,0.07); color: white; }
 .dropdown-divider { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 6px 0; }
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7128721503592760"
+     crossorigin="anonymous"></script>
 </style>
 
 <nav class="biolink-nav">

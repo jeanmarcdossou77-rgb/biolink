@@ -44,6 +44,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::post('/pathologies/{id}/approuver', [AdminController::class, 'approuverPathologie']);
     Route::post('/users/{id}/make-admin', [AdminController::class, 'makeAdmin']);
     Route::post('/jobs/{id}/approuver', [AdminController::class, 'approuverJob']);
+    Route::post('/users/{id}/remove-admin', [AdminController::class, 'removeAdmin']);
 });
 
 use App\Http\Controllers\ProfilController;
@@ -138,3 +139,10 @@ Route::get('/sitemap.xml', function() {
 });
 
 Route::get('/privacy', function() { return view('privacy'); })->name('privacy');
+
+use App\Http\Controllers\PhotoProfilController;
+
+Route::middleware('auth')->group(function() {
+    Route::post('/profil/photo', [PhotoProfilController::class, 'update'])->name('photo.update');
+    Route::delete('/profil/photo', [PhotoProfilController::class, 'delete'])->name('photo.delete');
+});

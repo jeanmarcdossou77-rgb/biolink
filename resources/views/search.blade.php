@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    @include('components.head')
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BioLink – Recherche de pathologies</title>
     <style>
@@ -229,7 +230,16 @@
                             </option>
                         @endforeach
                     @endisset
+                    <option value="autre">✏️ Recherche libre...</option>
                 </select>
+
+                <input type="text" name="query_libre" id="queryLibre" class="search-input" placeholder="Tapez votre pathologie..." style="display:none; margin-top:8px;">
+            <script>
+document.querySelector('select[name="categorie"]').addEventListener('change', function() {
+    const libre = document.getElementById('queryLibre');
+    libre.style.display = this.value === 'autre' ? 'block' : 'none';
+});
+</script>
             </div>
             <button type="submit" class="search-btn">🧬 Rechercher un remède naturel</button>
         </form>

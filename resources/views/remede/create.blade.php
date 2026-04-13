@@ -90,18 +90,22 @@
                 @error('titre') <div class="error">{{ $message }}</div> @enderror
             </div>
 
-            <div class="form-group">
-                <label>Pathologie concernée <span class="required">*</span></label>
-                <select name="pathologie_id" required>
-                    <option value="">Sélectionnez une pathologie</option>
-                    @foreach($pathologies as $pathologie)
-                        <option value="{{ $pathologie->id }}" {{ request('pathologie') == $pathologie->id ? 'selected' : '' }}>
-                            {{ $pathologie->nom }} ({{ $pathologie->categorie }})
-                        </option>
-                    @endforeach
-                </select>
-                @error('pathologie_id') <div class="error">{{ $message }}</div> @enderror
-            </div>
+        <div class="form-group">
+    <label>Pathologie concernée <span class="required">*</span></label>
+    <select name="pathologie_id" id="pathologieSelect" onchange="checkAutre(this)">
+        <option value="">Sélectionnez une pathologie</option>
+        @foreach($pathologies as $pathologie)
+            <option value="{{ $pathologie->id }}">{{ $pathologie->nom }} ({{ $pathologie->categorie }})</option>
+        @endforeach
+        <option value="autre">✏️ Autre — Je ne trouve pas ma pathologie</option>
+    </select>
+</div>
+
+<div class="form-group" id="autrePathologieDiv" style="display:none;">
+    <label>Nom de votre pathologie <span class="required">*</span></label>
+    <input type="text" name="pathologie_libre" id="pathologieLibre" placeholder="Écrivez le nom exact de votre pathologie...">
+    <div style="font-size:12px; color:#00e5a0; margin-top:6px;">✅ Votre pathologie sera ajoutée à notre base après validation.</div>
+</div>
 
             <div class="form-group">
                 <label>Description du remède <span class="required">*</span></label>
@@ -169,5 +173,19 @@
         </form>
     </div>
 </div>
+
+<script>
+function checkAutre(select) {
+    const div = document.getElementById('autrePathologieDiv');
+    const input = document.getElementById('pathologieLibre');
+    if (select.value === 'autre') {
+        div.style.display = 'block';
+        input.required = true;
+    } else {
+        div.style.display = 'none';
+        input.required = false;
+    }
+}
+</script>
 </body>
 </html>

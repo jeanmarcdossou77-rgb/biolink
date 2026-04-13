@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    @include('components.head')
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BioLink – Mon Profil</title>
     <style>
@@ -100,33 +101,29 @@
         <div class="success-msg">{{ session('success') }}</div>
     @endif
 
-    <!-- Header profil -->
-    <div class="profile-header">
-        <div class="avatar-large">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</div>
-        <div class="profile-info">
-            <h1>{{ Auth::user()->name }}</h1>
-            <div class="grade-tag">
-                {{ Auth::user()->nom_grade['emoji'] }} {{ Auth::user()->nom_grade['nom'] }} — Niveau {{ Auth::user()->grade_id }}
-            </div>
-            <div style="font-size:13px; color:rgba(255,255,255,0.5);">
-                📧 {{ Auth::user()->email }} · Membre depuis {{ Auth::user()->created_at->format('d/m/Y') }}
-            </div>
-            <div class="profile-stats">
-                <div class="profile-stat">
-                    <div class="profile-stat-num">{{ Auth::user()->publications_validees }}</div>
-                    <div class="profile-stat-label">Publications</div>
-                </div>
-                <div class="profile-stat">
-                    <div class="profile-stat-num">{{ Auth::user()->points }}</div>
-                    <div class="profile-stat-label">Points</div>
-                </div>
-                <div class="profile-stat">
-                    <div class="profile-stat-num">{{ Auth::user()->grade_id }}/5</div>
-                    <div class="profile-stat-label">Grade</div>
-                </div>
-            </div>
-        </div>
+<!-- Avatar avec upload -->
+<div style="position:relative; display:inline-block;">
+    <div class="avatar-large" id="avatarDisplay">
+        @if(Auth::user()->photo_profil)
+            <img src="{{ Storage::url(Auth::user()->photo_profil) }}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+        @else
+            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+        @endif
     </div>
+    <label for="photoInput" style="position:absolute;bottom:0;right:0;background:#00e5a0;color:#0a1628;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;border:3px solid #0a1628;" title="Changer la photo">📷</label>
+</div>
+
+<form method="POST" action="/profil/photo" enctype="multipart/form-data" id="photoForm">
+    @csrf
+    <input type="file" id="photoInput" name="photo" accept="image/*" style="display:none" onchange="document.getElementById('photoForm').submit()">
+</form>
+
+@if(Auth::user()->photo_profil)
+<form method="POST" action="/profil/photo" style="margin-top:8px;">
+    @csrf @method('DELETE')
+    <button type="submit" style="background:rgba(255,80,80,0.2);border:1px solid #ff5050;color:#ff5050;padding:4px 12px;border-radius:10px;font-size:12px;cursor:pointer;">🗑️ Supprimer la photo</button>
+</form>
+@endif
 
     <!-- Formulaire profil -->
     <div class="form-card">

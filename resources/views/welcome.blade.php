@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    @include('components.head')
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BioLink – La science biologique à votre service</title>
     <meta name="description" content="BioLink — Découvrez les remèdes naturels pour 336+ pathologies. Plateforme collaborative de science biologique et santé naturelle. 100% Gratuit !">

@@ -193,14 +193,25 @@
                     <td><span class="grade-badge">Niveau {{ $user->grade_id }}</span></td>
                     <td>{{ $user->created_at->format('d/m/Y') }}</td>
                     <td>
-                        @if(!$user->is_admin)
-                        <form method="POST" action="/admin/users/{{ $user->id }}/make-admin">
-                            @csrf
-                            <button type="submit" class="btn-approve" style="font-size:11px; padding:4px 10px;">👑 Admin</button>
-                        </form>
-                        @else
-                            <span style="color:#ffa500; font-size:12px;">👑 Admin</span>
-                        @endif
+@if(Auth::id() === 1)
+    @if(!$user->is_admin)
+    <form method="POST" action="/admin/users/{{ $user->id }}/make-admin">
+        @csrf
+        <button type="submit" class="btn-approve" style="font-size:11px;padding:4px 10px;">👑 Rendre Admin</button>
+    </form>
+    @elseif($user->id !== 1)
+    <form method="POST" action="/admin/users/{{ $user->id }}/remove-admin">
+        @csrf
+        <button type="submit" class="btn-reject" style="font-size:11px;padding:4px 10px;">❌ Retirer Admin</button>
+    </form>
+    @else
+        <span style="color:#ffa500;font-size:12px;">👑 Fondateur</span>
+    @endif
+@else
+    @if($user->is_admin)
+        <span style="color:#ffa500;font-size:12px;">👑 Admin</span>
+    @endif
+@endif
                     </td>
                 </tr>
                 @endforeach

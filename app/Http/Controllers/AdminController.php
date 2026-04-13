@@ -64,12 +64,27 @@ return view('admin.index', compact('stats', 'remedes_en_attente', 'pathologies_e
         return redirect()->back()->with('success', '✅ Pathologie approuvée !');
     }
 
-    public function makeAdmin($id)
-    {
-        if (!auth()->user()->is_admin) abort(403);
-        User::findOrFail($id)->update(['is_admin' => true]);
-        return redirect()->back()->with('success', '✅ Utilisateur promu administrateur !');
+public function makeAdmin($id)
+{
+    // Seul le super admin (ID 1 = Jean-Marc) peut promouvoir
+    if (Auth::id() !== 1) {
+        abort(403, 'Seul le fondateur de BioLink peut attribuer les droits admin.');
     }
+    User::findOrFail($id)->update(['is_admin' => true]);
+    return redirect()->back()->with('success', '✅ Administrateur promu !');
+}
+
+public function removeAdmin($id)
+{
+    if (Auth::id() !== 1) {
+        abort(403);
+    }
+    if ($id == 1) {
+        return redirect()->back()->with('error', '❌ Impossible de retirer vos propres droits !');
+    }
+    User::findOrFail($id)->update(['is_admin' => false]);
+    return redirect()->back()->with('success', '✅ Droits admin retirés.');
+}
 
     public function approuverJob($id)
 {

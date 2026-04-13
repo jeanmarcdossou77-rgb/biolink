@@ -1,0 +1,97 @@
+/* ===== BIOLINK MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+
+    /* Navbar mobile */
+    .biolink-nav {
+        padding: 12px 16px !important;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .nav-links {
+        gap: 4px !important;
+        flex-wrap: wrap;
+    }
+    .nav-link {
+        padding: 6px 10px !important;
+        font-size: 12px !important;
+    }
+    .dropdown-menu {
+        right: 0 !important;
+        left: auto !important;
+        min-width: 180px !important;
+    }
+
+    /* Hero page accueil */
+    .hero h1 { font-size: 28px !important; }
+    .hero p { font-size: 15px !important; }
+    .hero-btns { flex-direction: column !important; align-items: center !important; }
+    .stats { gap: 20px !important; padding: 30px 16px !important; }
+    .stat-num { font-size: 30px !important; }
+    .features-grid { grid-template-columns: 1fr !important; }
+    .testimonials-grid { grid-template-columns: 1fr !important; }
+    .footer-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+    .grades-timeline { flex-direction: column !important; gap: 16px !important; }
+    .grades-timeline::before { display: none !important; }
+
+    /* Feed social */
+    .layout { grid-template-columns: 1fr !important; padding: 10px !important; }
+    .sidebar { display: none !important; }
+    .post-composer { padding: 14px !important; }
+    .composer-input { font-size: 14px !important; }
+
+    /* Recherche */
+    .search-row { flex-direction: column !important; }
+    .search-select { min-width: unset !important; width: 100% !important; }
+    .results-grid { grid-template-columns: 1fr !important; }
+
+    /* Dashboard */
+    .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .main-grid { grid-template-columns: 1fr !important; }
+    .actions-grid { grid-template-columns: 1fr 1fr !important; }
+    .welcome-card { flex-direction: column !important; text-align: center !important; }
+
+    /* Messages */
+    .messages-layout { grid-template-columns: 1fr !important; }
+    .chat-layout { flex-direction: column !important; }
+
+    /* Groupes */
+    .groups-grid { grid-template-columns: 1fr !important; }
+
+    /* Profil */
+    .profile-header { flex-direction: column !important; text-align: center !important; }
+    .profile-stats { justify-content: center !important; }
+    .form-grid { grid-template-columns: 1fr !important; }
+    .form-row { grid-template-columns: 1fr !important; }
+    .form-row-3 { grid-template-columns: 1fr !important; }
+
+    /* Premium */
+    .plans { flex-direction: column !important; align-items: center !important; }
+    .plan-card { width: 100% !important; max-width: 340px !important; }
+
+    /* Jobs */
+    .jobs-grid { grid-template-columns: 1fr !important; }
+
+    /* Admin */
+    .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+
+    /* Pathologie détail */
+    .info-grid { grid-template-columns: 1fr !important; }
+
+    /* Aide */
+    .guides-grid { grid-template-columns: 1fr 1fr !important; }
+
+    /* Boutons */
+    .btn-primary, .btn-secondary { padding: 12px 24px !important; font-size: 15px !important; }
+
+    /* Containers */
+    .container { padding: 16px !important; }
+    .section { padding: 40px 16px !important; }
+}
+
+@media (max-width: 480px) {
+    .actions-grid { grid-template-columns: 1fr !important; }
+    .guides-grid { grid-template-columns: 1fr !important; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .hero h1 { font-size: 24px !important; }
+    .nav-links .nav-link span { display: none; }
+}

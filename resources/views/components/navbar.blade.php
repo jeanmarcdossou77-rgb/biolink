@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/css/mobile.css">
 <style>
 .biolink-nav {
     display: flex; justify-content: space-between; align-items: center;

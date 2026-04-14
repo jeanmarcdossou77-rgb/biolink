@@ -6,6 +6,7 @@ use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class MessageController extends Controller
 {
@@ -104,15 +105,6 @@ public function send(Request $request, $userId)
         ]
     ]);
 }
-
-        return response()->json([
-            'message' => [
-                'id' => $message->id,
-                'contenu' => $message->contenu,
-                'sender_id' => $message->sender_id,
-                'created_at' => $message->created_at->format('H:i'),
-            ]
-        ]);
     }
 
     public function adminView()

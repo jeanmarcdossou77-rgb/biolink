@@ -229,37 +229,82 @@ select option {
     <p>Trouvez instantanément les remèdes naturels adaptés à votre situation</p>
 
     <div class="search-box">
-        <form action="{{ route('search.results') }}" method="GET">
-            <div class="search-row">
-                <input
-                    type="text"
-                    name="query"
-                    class="search-input"
-                    placeholder="🔍 Ex: diabète, migraine, hypertension..."
-                    value="{{ $query ?? '' }}"
-                >
-                <select name="categorie" class="search-select">
-                    <option value="">Toutes catégories</option>
-                    @isset($categories)
-                        @foreach($categories as $cat)
-                            <option value="{{ $cat }}" {{ isset($categorie) && $categorie == $cat ? 'selected' : '' }}>
-                                {{ $cat }}
-                            </option>
-                        @endforeach
-                    @endisset
-                    <option value="autre">✏️ Recherche libre...</option>
-                </select>
+<form method="GET" action="/recherche" id="searchForm">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+            <label style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:6px;display:block;">🔍 Recherche</label>
+            <input type="text" name="query" value="{{ request('query') }}"
+                placeholder="Ex: diabète, paludisme, fièvre..."
+                style="width:100%;padding:12px 16px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:12px;color:white;font-size:14px;outline:none;">
+        </div>
+        <div>
+            <label style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:6px;display:block;">📂 Catégorie</label>
+            <select name="categorie" style="width:100%;padding:12px 16px;background:#0d1f35;border:1px solid rgba(255,255,255,0.15);border-radius:12px;color:white;font-size:14px;outline:none;">
+                <option value="">Toutes catégories</option>
+                @foreach(\App\Models\Pathologie::distinct()->pluck('categorie')->sort() as $cat)
+                    <option value="{{ $cat }}" {{ request('categorie')==$cat?'selected':'' }} style="background:#0a1628;color:white;">{{ $cat }}</option>
+                @endforeach
+                <option value="autre">✏️ Autre...</option>
+            </select>
+        </div>
+    </div>
 
-                <input type="text" name="query_libre" id="queryLibre" class="search-input" placeholder="Tapez votre pathologie..." style="display:none; margin-top:8px;">
-            <script>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+            <label style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:6px;display:block;">⚠️ Gravité</label>
+            <select name="gravite" style="width:100%;padding:10px 14px;background:#0d1f35;border:1px solid rgba(255,255,255,0.15);border-radius:12px;color:white;font-size:13px;outline:none;">
+                <option value="">Toutes</option>
+                <option value="legere" {{ request('gravite')=='legere'?'selected':'' }} style="background:#0a1628;">🟢 Légère</option>
+                <option value="moderee" {{ request('gravite')=='moderee'?'selected':'' }} style="background:#0a1628;">🟡 Modérée</option>
+                <option value="grave" {{ request('gravite')=='grave'?'selected':'' }} style="background:#0a1628;">🔴 Grave</option>
+                <option value="critique" {{ request('gravite')=='critique'?'selected':'' }} style="background:#0a1628;">⚫ Critique</option>
+            </select>
+        </div>
+        <div>
+            <label style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:6px;display:block;">🌿 Type traitement</label>
+            <select name="type_traitement" style="width:100%;padding:10px 14px;background:#0d1f35;border:1px solid rgba(255,255,255,0.15);border-radius:12px;color:white;font-size:13px;outline:none;">
+                <option value="">Tous types</option>
+                <option value="phytotherapie" style="background:#0a1628;">🌺 Phytothérapie</option>
+                <option value="aromatherapie" style="background:#0a1628;">🌸 Aromathérapie</option>
+                <option value="alimentation" style="background:#0a1628;">🥗 Alimentation</option>
+                <option value="naturel" style="background:#0a1628;">🍃 Naturel</option>
+                <option value="traditionnel" style="background:#0a1628;">🏺 Traditionnel</option>
+            </select>
+        </div>
+        <div>
+            <label style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:6px;display:block;">🔗 Contagieux</label>
+            <select name="contagieux" style="width:100%;padding:10px 14px;background:#0d1f35;border:1px solid rgba(255,255,255,0.15);border-radius:12px;color:white;font-size:13px;outline:none;">
+                <option value="">Tous</option>
+                <option value="1" style="background:#0a1628;">⚠️ Contagieux</option>
+                <option value="0" style="background:#0a1628;">✅ Non contagieux</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Pathologie libre -->
+    <div id="autreDiv" style="display:{{ request('categorie')=='autre'?'block':'none' }};margin-bottom:12px;">
+        <input type="text" name="query_libre" value="{{ request('query_libre') }}"
+            placeholder="Tapez le nom de la pathologie..."
+            style="width:100%;padding:12px 16px;background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.3);border-radius:12px;color:white;font-size:14px;outline:none;">
+    </div>
+
+    <div style="display:flex;gap:10px;">
+        <button type="submit"
+            style="flex:1;padding:13px;background:#00e5a0;color:#0a1628;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">
+            🔬 Rechercher un remède naturel
+        </button>
+        <a href="/recherche"
+            style="padding:13px 18px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.2);border-radius:12px;color:rgba(255,255,255,0.7);text-decoration:none;font-size:14px;display:flex;align-items:center;">
+            ✕
+        </a>
+    </div>
+</form>
+
+<script>
 document.querySelector('select[name="categorie"]').addEventListener('change', function() {
-    const libre = document.getElementById('queryLibre');
-    libre.style.display = this.value === 'autre' ? 'block' : 'none';
+    document.getElementById('autreDiv').style.display = this.value === 'autre' ? 'block' : 'none';
 });
 </script>
-            </div>
-            <button type="submit" class="search-btn">🧬 Rechercher un remède naturel</button>
-        </form>
     </div>
 </section>
 

@@ -168,6 +168,8 @@
                 <div class="composer-footer">
                     <div class="composer-tools">
                         <button type="button" class="tool-btn" onclick="document.getElementById('imgInput').click()" title="Photos">📷</button>
+                        <button type="button" class="tool-btn" onclick="document.getElementById('videoInput').click()" title="Vidéo">🎥</button>
+                        <input type="file" name="video" id="videoInput" accept="video/mp4,video/webm" style="display:none" onchange="previewVideo(this)">
                         <button type="button" class="emoji-picker-btn" onclick="toggleEmojiPicker('postEmoji','postInput')" title="Emojis">😊</button>
                         <select name="visibilite" class="visib-select">
                             <option value="public">🌍 Public</option>
@@ -218,6 +220,16 @@
             </div>
             @endif
 
+            @if($post->video_path)
+<div style="padding:0 0 8px;">
+    <video src="{{ Storage::url($post->video_path) }}" controls
+        style="width:100%;max-height:400px;background:#000;display:block;"
+        preload="metadata">
+        Votre navigateur ne supporte pas la vidéo.
+    </video>
+</div>
+@endif
+
             <!-- Compteurs réactions -->
             @if($post->likes_count>0||$post->comments_count>0)
             <div class="reactions-count">
@@ -247,6 +259,7 @@
                     💬 <span id="cmt-count-{{ $post->id }}">{{ $post->comments_count }}</span>
                 </button>
                 <button class="act-btn" onclick="sharePost({{ $post->id }})">🔗 Partager</button>
+                <button class="act-btn" onclick="signalerPost({{ $post->id }})">🚩</button>
             </div>
 
             <!-- Commentaires -->
@@ -344,6 +357,19 @@
             </div>
             @endforeach
         </div>
+        <div class="sidebar-card" style="margin-bottom:12px;">
+    <div class="sidebar-title">🔥 Tendances cette semaine</div>
+    @foreach($tendances as $t)
+    <a href="/pathologies/{{ $t->id }}" style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);text-decoration:none;color:white;">
+        <div>
+            <div style="font-size:13px;font-weight:600;">{{ Str::limit($t->nom,25) }}</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4);">{{ $t->categorie }}</div>
+        </div>
+        <span style="font-size:11px;color:#00e5a0;">👁️ {{ $t->vues }}</span>
+    </a>
+    @endforeach
+    <a href="/recherche" style="display:block;text-align:center;margin-top:10px;font-size:12px;color:#00e5a0;text-decoration:none;">Voir toutes →</a>
+</div>
         <div class="sidebar-card" style="background:rgba(255,80,80,0.08);border-color:rgba(255,80,80,0.2);">
             <div class="sidebar-title" style="color:#ff8080;">🆘 Urgence</div>
             <a href="https://wa.me/22962976186" target="_blank" style="display:flex;align-items:center;gap:8px;color:#25D366;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:8px;">📱 WhatsApp</a>
@@ -575,6 +601,32 @@ function sharePost(postId) {
         navigator.clipboard.writeText(url);
         alert('Lien copié !');
     }
+}
+
+function signalerPost(postId) {
+    const raisons = ['Contenu inapproprié','Spam','Fausse information','Harcèlement','Contenu dangereux'];
+    const raison = prompt('Raison du signalement:\n' + raisons.map((r,i)=>`${i+1}. ${r}`).join('\n') + '\n\nEntrez le numéro (1-5):');
+    if (!raison) return;
+    const idx = parseInt(raison) - 1;
+    const raisonText = raisons[idx] || 'Contenu inapproprié';
+
+    fetch(`/signaler/post/${postId}`, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': csrf, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ raison: raisonText })
+    })
+    .then(() => alert('✅ Signalement envoyé. Merci !'));
+}
+
+function previewVideo(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    document.getElementById('previewGrid').innerHTML += `
+        <div style="margin-top:8px;">
+            <video src="${url}" controls style="max-width:100%;border-radius:10px;max-height:200px;"></video>
+            <div style="font-size:11px;color:#00e5a0;margin-top:4px;">🎥 ${file.name} (${(file.size/1024/1024).toFixed(1)} Mo)</div>
+        </div>`;
 }
 </script>
 </body>

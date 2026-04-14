@@ -79,6 +79,7 @@
     @endif
 
     <h1>{{ $pathologie->nom }}</h1>
+    <span style="font-size:13px;color:rgba(255,255,255,0.5);">👁️ {{ $pathologie->vues }} vues</span>
     <p class="description">{{ $pathologie->description }}</p>
 
     <div class="info-grid">

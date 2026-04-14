@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\Pathologie;
 use App\Models\Comment;
 use App\Models\Like;
 use App\Models\User;
@@ -11,24 +12,31 @@ use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
-    public function index()
-    {
-        $posts = Post::with(['user', 'images', 'comments.user'])
-            ->where('visibilite', 'public')
-            ->orWhere('user_id', Auth::id())
-            ->latest()
-            ->paginate(10);
+public function index()
+{
+    $posts = Post::with(['user','images','comments.user'])
+        ->where('visibilite','public')
+        ->orWhere('user_id', Auth::id())
+        ->latest()
+        ->paginate(10);
 
-        $users = User::where('id', '!=', Auth::id())->take(5)->get();
+    $users = User::where('id','!=',Auth::id())->take(6)->get();
 
-        return view('social.feed', compact('posts', 'users'));
-    }
+    // Tendances — pathologies les plus vues cette semaine
+    $tendances = \App\Models\Pathologie::where('approuve', true)
+        ->orderBy('vues', 'desc')
+        ->take(5)
+        ->get();
+
+    return view('social.feed', compact('posts', 'users', 'tendances'));
+}
 
     public function store(Request $request)
     {
         $request->validate([
             'contenu' => 'required_without:images|nullable|string',
             'images.*' => 'nullable|image|max:5120',
+            'video' => 'nullable|mimetypes:video/mp4,video/webm,video/ogg|max:51200',
         ]);
 
         $post = Post::create([
@@ -49,6 +57,11 @@ class PostController extends Controller
         }
 
         return redirect()->back()->with('success', '✅ Publication créée !');
+        // Gérer vidéo
+if ($request->hasFile('video')) {
+    $videoPath = $request->file('video')->store('videos', 'public');
+    $post->update(['video_path' => $videoPath]);
+}
     }
 
     public function destroy($id)

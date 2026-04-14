@@ -244,16 +244,14 @@
             <a href="/aide" class="nav-link">❓ Aide</a>
 
             @auth
-                <a href="/messages" class="notif-btn" title="Messages">
-                    💬
-                    @php $unread = \App\Models\Message::where('receiver_id', Auth::id())->where('lu', false)->count(); @endphp
-                    @if($unread > 0)<span class="notif-badge">{{ $unread }}</span>@endif
-                </a>
-                <a href="/notifications" class="notif-btn" title="Notifications">
-                    🔔
-                    @php $notifs = \App\Models\NotificationBiolink::where('user_id', Auth::id())->where('lu', false)->count(); @endphp
-                    @if($notifs > 0)<span class="notif-badge">{{ $notifs }}</span>@endif
-                </a>
+<a href="/messages" class="notif-btn" title="Messages">
+    💬
+    <span class="notif-badge" id="msg-badge" style="display:none">0</span>
+</a>
+<a href="/notifications" class="notif-btn" title="Notifications">
+    🔔
+    <span class="notif-badge" id="notif-badge" style="display:none">0</span>
+</a>
 
                 @if(Auth::user()->is_admin)
                     <a href="/admin" class="nav-link" style="color:#ffa500;">👑 Admin</a>
@@ -364,6 +362,52 @@ document.addEventListener('click', function(e) {
     const btn = document.querySelector('.hamburger');
     if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
         menu.classList.remove('open');
+    }
+});
+</script>
+
+<script>
+// Polling notifications temps réel
+@auth
+function checkNotifications() {
+    fetch('/api/notifications/count')
+        .then(r => r.json())
+        .then(data => {
+            const msgBadge = document.getElementById('msg-badge');
+            const notifBadge = document.getElementById('notif-badge');
+            if (msgBadge && data.messages > 0) {
+                msgBadge.textContent = data.messages;
+                msgBadge.style.display = 'flex';
+            } else if (msgBadge) {
+                msgBadge.style.display = 'none';
+            }
+            if (notifBadge && data.notifications > 0) {
+                notifBadge.textContent = data.notifications;
+                notifBadge.style.display = 'flex';
+            } else if (notifBadge) {
+                notifBadge.style.display = 'none';
+            }
+        })
+        .catch(() => {});
+}
+setInterval(checkNotifications, 15000);
+checkNotifications();
+@endauth
+</script>
+
+<!-- Bouton retour en haut -->
+<button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})"
+    style="display:none;position:fixed;bottom:80px;right:16px;width:44px;height:44px;border-radius:50%;background:#00e5a0;color:#0a1628;border:none;font-size:20px;cursor:pointer;box-shadow:0 4px 16px rgba(0,229,160,0.4);z-index:999;transition:all 0.3s;align-items:center;justify-content:center;">
+    ↑
+</button>
+
+<script>
+const backBtn = document.getElementById('backToTop');
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 400) {
+        backBtn.style.display = 'flex';
+    } else {
+        backBtn.style.display = 'none';
     }
 });
 </script>

@@ -168,3 +168,36 @@ Route::post('/comments/{id}/like', function($id) {
     }
     return response()->json(['liked' => $liked, 'count' => $comment->fresh()->likes_count]);
 })->middleware('auth');
+
+Route::middleware('auth')->get('/api/notifications/count', function() {
+    return response()->json([
+        'messages' => \App\Models\Message::where('receiver_id', auth()->id())->where('lu', false)->count(),
+        'notifications' => \App\Models\NotificationBiolink::where('user_id', auth()->id())->where('lu', false)->count(),
+    ]);
+});
+
+Route::middleware('auth')->post('/signaler/{type}/{id}', function($type, $id) {
+    $modelMap = ['post' => \App\Models\Post::class, 'comment' => \App\Models\Comment::class];
+    if (!isset($modelMap[$type])) abort(404);
+
+    \DB::table('signalements')->insert([
+        'user_id' => auth()->id(),
+        'signable_type' => $modelMap[$type],
+        'signable_id' => $id,
+        'raison' => request('raison', 'Contenu inapproprié'),
+        'details' => request('details'),
+        'statut' => 'en_attente',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    \App\Models\NotificationBiolink::envoyer(
+        1,
+        '🚨 Signalement reçu',
+        auth()->user()->name . ' a signalé un contenu. Raison: ' . request('raison'),
+        'alerte',
+        '/admin'
+    );
+
+    return response()->json(['success' => true]);
+})->name('signaler');

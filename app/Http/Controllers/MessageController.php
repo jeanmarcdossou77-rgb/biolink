@@ -70,16 +70,40 @@ class MessageController extends Controller
         return view('social.conversation', compact('messages', 'otherUser', 'users'));
     }
 
-    public function send(Request $request, $userId)
-    {
-        $request->validate(['contenu' => 'required|min:1']);
+public function send(Request $request, $userId)
+{
+    $request->validate([
+        'contenu' => 'nullable|string',
+        'photo' => 'nullable|image|max:5120',
+    ]);
 
-        $message = Message::create([
-            'sender_id' => Auth::id(),
-            'receiver_id' => $userId,
-            'contenu' => $request->contenu,
-            'lu' => false,
-        ]);
+    $photoPath = null;
+    if ($request->hasFile('photo')) {
+        $photoPath = $request->file('photo')->store('messages', 'public');
+    }
+
+    if (!$request->contenu && !$photoPath) {
+        return response()->json(['error' => 'Message vide'], 400);
+    }
+
+    $message = Message::create([
+        'sender_id' => Auth::id(),
+        'receiver_id' => $userId,
+        'contenu' => $request->contenu ?? '',
+        'photo' => $photoPath,
+        'lu' => false,
+    ]);
+
+    return response()->json([
+        'message' => [
+            'id' => $message->id,
+            'contenu' => $message->contenu,
+            'photo' => $photoPath ? Storage::url($photoPath) : null,
+            'sender_id' => $message->sender_id,
+            'created_at' => $message->created_at->format('H:i'),
+        ]
+    ]);
+}
 
         return response()->json([
             'message' => [

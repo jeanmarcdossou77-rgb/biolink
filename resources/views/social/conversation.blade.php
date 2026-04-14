@@ -183,12 +183,16 @@ html, body {
                 @endforeach
             </div>
 
-            <div class="chat-input-area">
-                <textarea class="chat-input" id="msgInput" placeholder="Écrire un message..." rows="1"
-                    onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"
-                    oninput="autoResize(this)"></textarea>
-                <button class="send-btn" onclick="sendMsg()">➤</button>
-            </div>
+<div class="chat-input-area">
+    <label for="msgPhoto" style="cursor:pointer;font-size:22px;padding:4px 8px;border-radius:8px;transition:all 0.2s;" title="Photo">📷</label>
+    <input type="file" id="msgPhoto" accept="image/*" style="display:none" onchange="sendPhoto(this)">
+    <button type="button" class="emoji-picker-btn" onclick="toggleMsgEmoji()" style="font-size:20px;">😊</button>
+    <textarea class="chat-input" id="msgInput" placeholder="Écrire un message..." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"
+        oninput="autoResize(this)"></textarea>
+    <button class="send-btn" onclick="sendMsg()">➤</button>
+</div>
+<div id="msgEmojiPanel" class="emoji-panel" style="position:fixed;bottom:70px;right:16px;z-index:100;"></div>
         </div>
     </div>
 </div>
@@ -227,6 +231,53 @@ function sendMsg() {
         msgs.scrollTop = msgs.scrollHeight;
         input.value = '';
         input.style.height = 'auto';
+    });
+}
+const EMOJIS_MSG = ['😊','😂','❤️','🔥','👍','🙏','😍','🤔','😢','😡','🎉','🌿','💪','✅','🌍','🤖','😮','⭐','👏','🫂'];
+
+function toggleMsgEmoji() {
+    const panel = document.getElementById('msgEmojiPanel');
+    if (!panel.innerHTML) {
+        EMOJIS_MSG.forEach(e => {
+            const btn = document.createElement('button');
+            btn.textContent = e;
+            btn.className = 'emoji-btn';
+            btn.style.cssText = 'font-size:22px;cursor:pointer;padding:4px;border:none;background:none;border-radius:6px;';
+            btn.onclick = () => {
+                const input = document.getElementById('msgInput');
+                input.value += e;
+                input.focus();
+            };
+            panel.appendChild(btn);
+        });
+    }
+    panel.classList.toggle('open');
+}
+
+function sendPhoto(input) {
+    if (!input.files[0]) return;
+    const formData = new FormData();
+    formData.append('photo', input.files[0]);
+    formData.append('_token', csrf);
+
+    fetch('/messages/{{ $otherUser->id }}/send', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': csrf },
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        const m = data.message;
+        msgs.innerHTML += `
+            <div class="msg-row sent">
+                <div class="msg-av">{{ strtoupper(substr(Auth::user()->name,0,1)) }}</div>
+                <div>
+                    <div class="msg-bubble"><img src="${m.photo}" style="max-width:200px;border-radius:10px;display:block;"></div>
+                    <div class="msg-time">${m.created_at}</div>
+                </div>
+            </div>`;
+        msgs.scrollTop = msgs.scrollHeight;
+        input.value = '';
     });
 }
 </script>

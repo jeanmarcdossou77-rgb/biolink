@@ -2,116 +2,126 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    @include('components.head')
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>BioLink – Fil d'actualité</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #0a1628; color: white; }
-        .layout { display: grid; grid-template-columns: 280px 1fr 280px; gap: 20px; max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .sidebar { position: sticky; top: 80px; height: fit-content; }
-        .sidebar-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 20px; margin-bottom: 16px; }
-        .sidebar-title { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
-        .user-mini { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .user-mini:last-child { border-bottom: none; }
-        .avatar-sm { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #00e5a0, #378ADD); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #0a1628; overflow: hidden; flex-shrink: 0; }
-        .avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
-        .user-mini-name { font-size: 13px; font-weight: 600; }
-        .user-mini-grade { font-size: 11px; color: rgba(255,255,255,0.5); }
-        .btn-add { background: rgba(0,229,160,0.15); border: 1px solid rgba(0,229,160,0.3); color: #00e5a0; padding: 4px 10px; border-radius: 10px; font-size: 11px; cursor: pointer; text-decoration: none; margin-left: auto; }
-        .post-composer { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
-        .composer-header { display: flex; gap: 12px; align-items: flex-start; }
-        .composer-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #00e5a0, #378ADD); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #0a1628; overflow: hidden; flex-shrink: 0; }
-        .composer-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .composer-input { flex: 1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); border-radius: 25px; padding: 12px 20px; color: white; font-size: 15px; outline: none; resize: none; transition: all 0.3s; min-height: 50px; font-family: inherit; }
-        .composer-input:focus { border-color: #00e5a0; min-height: 100px; }
-        .composer-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
-        .composer-tools { display: flex; gap: 12px; }
-        .tool-btn { background: none; border: none; color: rgba(255,255,255,0.6); cursor: pointer; font-size: 20px; padding: 6px; border-radius: 8px; transition: all 0.2s; }
-        .tool-btn:hover { background: rgba(255,255,255,0.1); color: white; }
-        .btn-post { background: #00e5a0; color: #0a1628; border: none; padding: 10px 24px; border-radius: 20px; font-size: 14px; font-weight: 700; cursor: pointer; }
-        .image-preview { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-        .preview-item { position: relative; }
-        .preview-item img { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; }
-        .preview-remove { position: absolute; top: -6px; right: -6px; background: #ff5050; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; }
-        .post-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; margin-bottom: 16px; overflow: hidden; transition: border-color 0.3s; }
-        .post-card:hover { border-color: rgba(255,255,255,0.2); }
-        .post-header { display: flex; align-items: center; gap: 12px; padding: 16px; }
-        .post-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #00e5a0, #378ADD); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #0a1628; overflow: hidden; flex-shrink: 0; }
-        .post-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .post-user-name { font-size: 15px; font-weight: 700; }
-        .post-user-grade { font-size: 12px; color: #00e5a0; }
-        .post-time { font-size: 12px; color: rgba(255,255,255,0.4); margin-left: auto; }
-        .post-content { padding: 0 16px 16px; font-size: 15px; line-height: 1.7; color: rgba(255,255,255,0.9); }
-        .post-images { display: grid; gap: 2px; margin-bottom: 12px; }
-        .post-images.one img { width: 100%; max-height: 400px; object-fit: cover; }
-        .post-images.two { grid-template-columns: 1fr 1fr; }
-        .post-images.two img { height: 200px; object-fit: cover; width: 100%; }
-        .post-images.three { grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; }
-        .post-images.three img:first-child { grid-row: 1 / 3; height: 300px; object-fit: cover; width: 100%; }
-        .post-images.three img { height: 150px; object-fit: cover; width: 100%; }
-        .post-actions { display: flex; gap: 4px; padding: 8px 12px; border-top: 1px solid rgba(255,255,255,0.07); }
-        .action-btn { display: flex; align-items: center; gap: 6px; background: none; border: none; color: rgba(255,255,255,0.6); cursor: pointer; padding: 8px 16px; border-radius: 8px; font-size: 14px; transition: all 0.2s; flex: 1; justify-content: center; }
-        .action-btn:hover { background: rgba(255,255,255,0.08); color: white; }
-        .action-btn.liked { color: #ff5050; }
-        .comments-section { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.07); display: none; }
-        .comments-section.active { display: block; }
-        .comment-item { display: flex; gap: 10px; margin-bottom: 12px; }
-        .comment-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #00e5a0, #378ADD); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #0a1628; overflow: hidden; flex-shrink: 0; }
-        .comment-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .comment-bubble { background: rgba(255,255,255,0.07); border-radius: 12px; padding: 10px 14px; flex: 1; }
-        .comment-user { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
-        .comment-text { font-size: 14px; color: rgba(255,255,255,0.8); }
-        .comment-time { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px; }
-        .comment-input-row { display: flex; gap: 8px; margin-top: 12px; }
-        .comment-input { flex: 1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 8px 16px; color: white; font-size: 14px; outline: none; }
-        .comment-input:focus { border-color: #00e5a0; }
-        .comment-send { background: #00e5a0; border: none; color: #0a1628; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: 700; font-size: 13px; }
-        .success-msg { background: rgba(0,229,160,0.15); border: 1px solid rgba(0,229,160,0.3); padding: 12px 20px; border-radius: 10px; margin-bottom: 16px; color: #00e5a0; font-size: 14px; }
-        .empty-feed { text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.4); }
-        .nav-link-side { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; color: rgba(255,255,255,0.8); text-decoration: none; font-size: 14px; transition: all 0.2s; margin-bottom: 4px; }
-        .nav-link-side:hover { background: rgba(255,255,255,0.08); color: white; }
-        .nav-link-side.active { background: rgba(0,229,160,0.15); color: #00e5a0; }
-        .badge-count { background: #ff5050; color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; margin-left: auto; }
-        @media(max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html,body { font-family:'Segoe UI',sans-serif; background:#0a1628; color:white; min-height:100vh; }
+        .layout { display:grid; grid-template-columns:260px 1fr 260px; gap:16px; max-width:1100px; margin:0 auto; padding:16px; }
+        .sidebar { position:sticky; top:10px; height:fit-content; }
+        .sidebar-card { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:16px; margin-bottom:12px; }
+        .sidebar-title { font-size:11px; font-weight:700; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
+        .nav-link-side { display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:10px; color:rgba(255,255,255,0.8); text-decoration:none; font-size:13px; transition:all 0.2s; margin-bottom:2px; }
+        .nav-link-side:hover,.nav-link-side.active { background:rgba(0,229,160,0.12); color:#00e5a0; }
+        .user-card { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+        .user-card:last-child { border-bottom:none; }
+        .av { width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg,#00e5a0,#378ADD); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; color:#0a1628; overflow:hidden; flex-shrink:0; }
+        .av img { width:100%; height:100%; object-fit:cover; }
+        .av-sm { width:32px; height:32px; font-size:12px; border-radius:50%; background:linear-gradient(135deg,#00e5a0,#378ADD); display:flex; align-items:center; justify-content:center; font-weight:700; color:#0a1628; overflow:hidden; flex-shrink:0; }
+        .av-sm img { width:100%; height:100%; object-fit:cover; }
+        .av-lg { width:44px; height:44px; font-size:18px; border-radius:50%; background:linear-gradient(135deg,#00e5a0,#378ADD); display:flex; align-items:center; justify-content:center; font-weight:700; color:#0a1628; overflow:hidden; flex-shrink:0; }
+        .av-lg img { width:100%; height:100%; object-fit:cover; }
+        .btn-add { background:rgba(0,229,160,0.15); border:1px solid rgba(0,229,160,0.3); color:#00e5a0; padding:4px 10px; border-radius:10px; font-size:11px; cursor:pointer; text-decoration:none; }
+        /* Composer */
+        .composer { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:16px; margin-bottom:14px; }
+        .composer-row { display:flex; gap:10px; align-items:flex-start; }
+        .composer-input { flex:1; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); border-radius:22px; padding:10px 18px; color:white; font-size:14px; outline:none; resize:none; min-height:44px; max-height:200px; font-family:inherit; line-height:1.6; overflow-y:auto; }
+        .composer-input:focus { border-color:#00e5a0; }
+        .composer-input::placeholder { color:rgba(255,255,255,0.4); }
+        .composer-footer { display:flex; justify-content:space-between; align-items:center; margin-top:10px; flex-wrap:wrap; gap:8px; }
+        .composer-tools { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+        .tool-btn { background:none; border:none; color:rgba(255,255,255,0.6); cursor:pointer; font-size:18px; padding:6px 8px; border-radius:8px; transition:all 0.2s; }
+        .tool-btn:hover { background:rgba(255,255,255,0.1); color:white; }
+        .emoji-picker-btn { font-size:18px; cursor:pointer; padding:6px 8px; border-radius:8px; background:none; border:none; transition:all 0.2s; }
+        .emoji-picker-btn:hover { background:rgba(255,255,255,0.1); }
+        .emoji-panel { display:none; background:#0d1f35; border:1px solid rgba(255,255,255,0.15); border-radius:12px; padding:10px; flex-wrap:wrap; gap:4px; max-width:280px; }
+        .emoji-panel.open { display:flex; }
+        .emoji-btn { font-size:20px; cursor:pointer; padding:4px; border-radius:6px; border:none; background:none; transition:all 0.2s; }
+        .emoji-btn:hover { background:rgba(255,255,255,0.1); transform:scale(1.2); }
+        .btn-post { background:#00e5a0; color:#0a1628; border:none; padding:10px 22px; border-radius:20px; font-size:14px; font-weight:700; cursor:pointer; transition:transform 0.2s; }
+        .btn-post:hover { transform:translateY(-2px); }
+        .preview-grid { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+        .preview-item { position:relative; }
+        .preview-item img { width:72px; height:72px; object-fit:cover; border-radius:10px; border:2px solid rgba(0,229,160,0.3); }
+        .preview-remove { position:absolute; top:-6px; right:-6px; background:#ff5050; color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; font-size:12px; display:flex; align-items:center; justify-content:center; }
+        .visib-select { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); color:white; padding:6px 12px; border-radius:10px; font-size:12px; outline:none; }
+        .visib-select option { background:#0a1628; }
+        /* Post card */
+        .post-card { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:16px; margin-bottom:14px; overflow:hidden; transition:border-color 0.3s; }
+        .post-card:hover { border-color:rgba(255,255,255,0.2); }
+        .post-head { display:flex; align-items:center; gap:10px; padding:14px 16px 0; }
+        .post-name { font-size:14px; font-weight:700; }
+        .post-grade { font-size:11px; color:#00e5a0; }
+        .post-time { font-size:11px; color:rgba(255,255,255,0.4); margin-left:auto; }
+        .post-body { padding:10px 16px 14px; font-size:14px; line-height:1.8; color:rgba(255,255,255,0.9); white-space:pre-wrap; word-break:break-word; }
+        /* Images grille */
+        .post-imgs { overflow:hidden; margin-bottom:2px; }
+        .post-imgs.c1 img { width:100%; max-height:380px; object-fit:cover; display:block; }
+        .post-imgs.c2 { display:grid; grid-template-columns:1fr 1fr; gap:2px; }
+        .post-imgs.c2 img { height:200px; width:100%; object-fit:cover; display:block; }
+        .post-imgs.c3 { display:grid; grid-template-columns:2fr 1fr; gap:2px; }
+        .post-imgs.c3 img:first-child { height:300px; object-fit:cover; display:block; width:100%; }
+        .post-imgs.c3 img { height:150px; object-fit:cover; display:block; width:100%; }
+        .post-imgs.c4 { display:grid; grid-template-columns:1fr 1fr; gap:2px; }
+        .post-imgs.c4 img { height:160px; object-fit:cover; display:block; width:100%; }
+        /* Réactions */
+        .post-actions { display:flex; gap:2px; padding:4px 10px 4px; border-top:1px solid rgba(255,255,255,0.07); }
+        .act-btn { display:flex; align-items:center; gap:5px; background:none; border:none; color:rgba(255,255,255,0.6); cursor:pointer; padding:8px 12px; border-radius:8px; font-size:13px; transition:all 0.2s; flex:1; justify-content:center; position:relative; }
+        .act-btn:hover { background:rgba(255,255,255,0.08); color:white; }
+        .act-btn.liked { color:#ff5050; }
+        .reaction-popup { display:none; position:absolute; bottom:44px; left:50%; transform:translateX(-50%); background:#0d1f35; border:1px solid rgba(255,255,255,0.15); border-radius:30px; padding:6px 10px; flex-direction:row; gap:4px; z-index:100; white-space:nowrap; box-shadow:0 4px 20px rgba(0,0,0,0.5); }
+        .act-btn:hover .reaction-popup { display:flex; }
+        .react-emoji { font-size:22px; cursor:pointer; padding:4px; border-radius:50%; transition:all 0.2s; border:none; background:none; }
+        .react-emoji:hover { transform:scale(1.4) translateY(-4px); }
+        /* Commentaires */
+        .comments-wrap { display:none; padding:12px 16px; border-top:1px solid rgba(255,255,255,0.07); }
+        .comments-wrap.open { display:block; }
+        .comment-item { display:flex; gap:8px; margin-bottom:10px; }
+        .comment-bubble { background:rgba(255,255,255,0.07); border-radius:14px; padding:8px 12px; flex:1; }
+        .comment-user { font-size:12px; font-weight:700; margin-bottom:3px; }
+        .comment-text { font-size:13px; color:rgba(255,255,255,0.85); white-space:pre-wrap; word-break:break-word; }
+        .comment-actions { display:flex; gap:12px; margin-top:5px; }
+        .comment-act { font-size:11px; color:rgba(255,255,255,0.45); cursor:pointer; transition:color 0.2s; border:none; background:none; padding:0; }
+        .comment-act:hover,.comment-act.liked { color:#00e5a0; }
+        .comment-time { font-size:10px; color:rgba(255,255,255,0.35); }
+        .reply-item { display:flex; gap:8px; margin-top:8px; margin-left:20px; }
+        .comment-input-row { display:flex; gap:8px; align-items:flex-end; margin-top:10px; }
+        .c-input { flex:1; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); border-radius:20px; padding:8px 14px; color:white; font-size:13px; outline:none; resize:none; max-height:100px; font-family:inherit; }
+        .c-input:focus { border-color:#00e5a0; }
+        .c-send { background:#00e5a0; border:none; color:#0a1628; padding:8px 14px; border-radius:20px; cursor:pointer; font-weight:700; font-size:12px; flex-shrink:0; }
+        .success-msg { background:rgba(0,229,160,0.15); border:1px solid rgba(0,229,160,0.3); padding:10px 16px; border-radius:10px; margin-bottom:12px; color:#00e5a0; font-size:13px; }
+        .reactions-count { font-size:12px; color:rgba(255,255,255,0.5); padding:2px 12px 6px; display:flex; gap:6px; }
+        @media(max-width:900px) { .layout { grid-template-columns:1fr; } .sidebar { display:none; } }
+        @media(max-width:480px) { .layout { padding:8px; } .post-body { font-size:13px; } }
     </style>
 </head>
 <body>
-
 @include('components.navbar')
 
 <div class="layout">
-
     <!-- Sidebar gauche -->
     <div class="sidebar">
         <div class="sidebar-card">
-            <div style="text-align:center; margin-bottom:16px;">
-                <div class="composer-avatar" style="margin:0 auto 10px; width:60px; height:60px; font-size:24px;">
+            <div style="text-align:center;margin-bottom:14px;">
+                <div class="av-lg" style="margin:0 auto 8px;">
                     @if(Auth::user()->photo_profil)
                         <img src="{{ Storage::url(Auth::user()->photo_profil) }}" alt="">
                     @else
-                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        {{ strtoupper(substr(Auth::user()->name,0,1)) }}
                     @endif
                 </div>
-                <div style="font-size:15px; font-weight:700;">{{ Auth::user()->name }}</div>
-                <div style="font-size:12px; color:#00e5a0;">{{ Auth::user()->nom_grade['emoji'] }} {{ Auth::user()->nom_grade['nom'] }}</div>
-                <div style="font-size:12px; color:rgba(255,255,255,0.5); margin-top:4px;">{{ Auth::user()->points }} points</div>
+                <div style="font-size:14px;font-weight:700;">{{ Auth::user()->name }}</div>
+                <div style="font-size:11px;color:#00e5a0;">{{ Auth::user()->nom_grade['emoji'] }} {{ Auth::user()->nom_grade['nom'] }}</div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:3px;">⭐ {{ Auth::user()->points }} pts</div>
             </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; text-align:center; border-top:1px solid rgba(255,255,255,0.1); padding-top:12px;">
-                <div>
-                    <div style="font-size:20px; font-weight:700; color:#00e5a0;">{{ Auth::user()->amis_count }}</div>
-                    <div style="font-size:11px; color:rgba(255,255,255,0.5);">Amis</div>
-                </div>
-                <div>
-                    <div style="font-size:20px; font-weight:700; color:#00e5a0;">{{ Auth::user()->posts()->count() }}</div>
-                    <div style="font-size:11px; color:rgba(255,255,255,0.5);">Publications</div>
-                </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:center;border-top:1px solid rgba(255,255,255,0.1);padding-top:10px;">
+                <div><div style="font-size:18px;font-weight:700;color:#00e5a0;">{{ Auth::user()->amis_count }}</div><div style="font-size:10px;color:rgba(255,255,255,0.5);">Amis</div></div>
+                <div><div style="font-size:18px;font-weight:700;color:#00e5a0;">{{ Auth::user()->posts()->count() }}</div><div style="font-size:10px;color:rgba(255,255,255,0.5);">Posts</div></div>
             </div>
         </div>
-
         <div class="sidebar-card">
-            <div class="sidebar-title">Navigation</div>
+            <div class="sidebar-title">Menu</div>
             <a href="/feed" class="nav-link-side active">🏠 Fil d'actualité</a>
             <a href="/friends/requests" class="nav-link-side">👥 Demandes d'amis</a>
             <a href="/messages" class="nav-link-side">💬 Messages</a>
@@ -123,278 +133,449 @@
         </div>
     </div>
 
-    <!-- Contenu principal -->
+    <!-- Centre -->
     <div>
         @if(session('success'))
             <div class="success-msg">{{ session('success') }}</div>
         @endif
 
-        <!-- Compositeur de publication -->
-        <div class="post-composer">
+        <!-- Compositeur -->
+        <div class="composer">
             <form method="POST" action="/posts" enctype="multipart/form-data" id="postForm">
                 @csrf
-                <div class="composer-header">
-                    <div class="composer-avatar">
+                <div class="composer-row">
+                    <div class="av-lg">
                         @if(Auth::user()->photo_profil)
                             <img src="{{ Storage::url(Auth::user()->photo_profil) }}" alt="">
                         @else
-                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                            {{ strtoupper(substr(Auth::user()->name,0,1)) }}
                         @endif
                     </div>
-                    <textarea name="contenu" class="composer-input" placeholder="Que se passe-t-il aujourd'hui ? Partagez vos connaissances sur la santé naturelle..."></textarea>
+                    <textarea
+                        name="contenu"
+                        class="composer-input"
+                        id="postInput"
+                        placeholder="Que se passe-t-il aujourd'hui ? Partagez vos connaissances..."
+                        onkeydown="handlePostEnter(event)"
+                        oninput="autoResize(this)"
+                        rows="2"
+                    ></textarea>
                 </div>
 
-                <div id="imagePreview" class="image-preview"></div>
-                <input type="file" name="images[]" id="imageInput" multiple accept="image/*" style="display:none" onchange="previewImages(this)">
+                <div id="previewGrid" class="preview-grid"></div>
+                <input type="file" name="images[]" id="imgInput" multiple accept="image/*" style="display:none" onchange="previewImgs(this)">
 
-                <div class="composer-actions">
+                <div class="composer-footer">
                     <div class="composer-tools">
-                        <button type="button" class="tool-btn" onclick="document.getElementById('imageInput').click()" title="Ajouter des photos">📷</button>
-                        <select name="visibilite" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); color:white; padding:6px 12px; border-radius:10px; font-size:13px; outline:none;">
+                        <button type="button" class="tool-btn" onclick="document.getElementById('imgInput').click()" title="Photos">📷</button>
+                        <button type="button" class="emoji-picker-btn" onclick="toggleEmojiPicker('postEmoji','postInput')" title="Emojis">😊</button>
+                        <select name="visibilite" class="visib-select">
                             <option value="public">🌍 Public</option>
-                            <option value="amis">👥 Amis seulement</option>
+                            <option value="amis">👥 Amis</option>
                             <option value="prive">🔒 Privé</option>
                         </select>
                     </div>
                     <button type="submit" class="btn-post">📝 Publier</button>
                 </div>
+                <div id="postEmoji" class="emoji-panel" style="margin-top:8px;"></div>
             </form>
         </div>
 
         <!-- Publications -->
-        @if($posts->count() > 0)
-            @foreach($posts as $post)
-            <div class="post-card" id="post-{{ $post->id }}">
-                <div class="post-header">
-                    <div class="post-avatar">
-                        @if($post->user->photo_profil)
-                            <img src="{{ Storage::url($post->user->photo_profil) }}" alt="">
-                        @else
-                            {{ strtoupper(substr($post->user->name, 0, 1)) }}
-                        @endif
-                    </div>
-                    <div>
-                        <div class="post-user-name">{{ $post->user->name }}</div>
-                        <div class="post-user-grade">{{ $post->user->nom_grade['emoji'] }} {{ $post->user->nom_grade['nom'] }}</div>
-                    </div>
-                    <div class="post-time">{{ $post->created_at->diffForHumans() }}</div>
-                    @if($post->user_id == Auth::id() || Auth::user()->is_admin)
-                        <form method="POST" action="/posts/{{ $post->id }}" style="margin-left:8px;">
-                            @csrf @method('DELETE')
-                            <button type="submit" style="background:none; border:none; color:rgba(255,255,255,0.4); cursor:pointer; font-size:16px;" onclick="return confirm('Supprimer ?')">🗑️</button>
-                        </form>
+        @forelse($posts as $post)
+        <div class="post-card" id="post-{{ $post->id }}">
+            <div class="post-head">
+                <div class="av-lg">
+                    @if($post->user->photo_profil)
+                        <img src="{{ Storage::url($post->user->photo_profil) }}" alt="">
+                    @else
+                        {{ strtoupper(substr($post->user->name,0,1)) }}
                     @endif
                 </div>
-
-                @if($post->contenu)
-                    <div class="post-content">{{ $post->contenu }}</div>
-                @endif
-
-                @if($post->images->count() > 0)
-                    <div class="post-images {{ ['','one','two','three','three'][$post->images->count()] ?? 'three' }}">
-                        @foreach($post->images->take(3) as $image)
-                            <img src="{{ Storage::url($image->image_path) }}" alt="">
-                        @endforeach
-                    </div>
-                @endif
-
-                <div class="post-actions">
-                    <button class="action-btn {{ $post->isLikedBy(Auth::id()) ? 'liked' : '' }}"
-                            onclick="likePost({{ $post->id }}, this)"
-                            id="like-btn-{{ $post->id }}">
-                        ❤️ <span id="like-count-{{ $post->id }}">{{ $post->likes_count }}</span>
-                    </button>
-                    <button class="action-btn" onclick="toggleComments({{ $post->id }})">
-                        💬 <span id="comment-count-{{ $post->id }}">{{ $post->comments_count }}</span>
-                    </button>
-                    <button class="action-btn" onclick="sharePost('{{ $post->id }}')">
-                        🔗 Partager
-                    </button>
+                <div>
+                    <div class="post-name">{{ $post->user->name }}</div>
+                    <div class="post-grade">{{ $post->user->nom_grade['emoji'] }} {{ $post->user->nom_grade['nom'] }}</div>
                 </div>
+                <span class="post-time">{{ $post->created_at->diffForHumans() }}</span>
+                @if($post->user_id==Auth::id()||Auth::user()->is_admin)
+                <form method="POST" action="/posts/{{ $post->id }}" style="margin-left:6px;">
+                    @csrf @method('DELETE')
+                    <button type="submit" style="background:none;border:none;color:rgba(255,80,80,0.7);cursor:pointer;font-size:16px;" onclick="return confirm('Supprimer ?')">🗑️</button>
+                </form>
+                @endif
+            </div>
 
-                <!-- Section commentaires -->
-                <div class="comments-section" id="comments-{{ $post->id }}">
-                    @foreach($post->comments as $comment)
-                    <div class="comment-item">
-                        <div class="comment-avatar">
+            @if($post->contenu)
+            <div class="post-body">{{ $post->contenu }}</div>
+            @endif
+
+            @if($post->images->count()>0)
+            @php $c=min($post->images->count(),4); $cls=['','c1','c2','c3','c4'][$c]; @endphp
+            <div class="post-imgs {{ $cls }}">
+                @foreach($post->images->take(4) as $img)
+                <img src="{{ Storage::url($img->image_path) }}" alt="" loading="lazy">
+                @endforeach
+            </div>
+            @endif
+
+            <!-- Compteurs réactions -->
+            @if($post->likes_count>0||$post->comments_count>0)
+            <div class="reactions-count">
+                @if($post->likes_count>0)<span>❤️ {{ $post->likes_count }}</span>@endif
+                @if($post->comments_count>0)<span>💬 {{ $post->comments_count }} commentaires</span>@endif
+            </div>
+            @endif
+
+            <!-- Actions -->
+            <div class="post-actions">
+                <!-- Like avec réactions -->
+                <button class="act-btn {{ $post->isLikedBy(Auth::id()) ? 'liked' : '' }}"
+                    id="like-btn-{{ $post->id }}"
+                    onclick="likePost({{ $post->id }},this)">
+                    <span id="like-emoji-{{ $post->id }}">{{ $post->isLikedBy(Auth::id()) ? '❤️' : '🤍' }}</span>
+                    <span id="like-count-{{ $post->id }}">{{ $post->likes_count }}</span>
+                    <div class="reaction-popup">
+                        <button class="react-emoji" onclick="event.stopPropagation();reactPost({{ $post->id }},'❤️')">❤️</button>
+                        <button class="react-emoji" onclick="event.stopPropagation();reactPost({{ $post->id }},'😂')">😂</button>
+                        <button class="react-emoji" onclick="event.stopPropagation();reactPost({{ $post->id }},'😮')">😮</button>
+                        <button class="react-emoji" onclick="event.stopPropagation();reactPost({{ $post->id }},'😢')">😢</button>
+                        <button class="react-emoji" onclick="event.stopPropagation();reactPost({{ $post->id }},'😡')">😡</button>
+                        <button class="react-emoji" onclick="event.stopPropagation();reactPost({{ $post->id }},'👍')">👍</button>
+                    </div>
+                </button>
+                <button class="act-btn" onclick="toggleComments({{ $post->id }})">
+                    💬 <span id="cmt-count-{{ $post->id }}">{{ $post->comments_count }}</span>
+                </button>
+                <button class="act-btn" onclick="sharePost({{ $post->id }})">🔗 Partager</button>
+            </div>
+
+            <!-- Commentaires -->
+            <div class="comments-wrap" id="comments-{{ $post->id }}">
+                <div id="comments-list-{{ $post->id }}">
+                    @foreach($post->comments->take(5) as $comment)
+                    <div class="comment-item" id="comment-{{ $comment->id }}">
+                        <div class="av-sm">
                             @if($comment->user->photo_profil)
                                 <img src="{{ Storage::url($comment->user->photo_profil) }}" alt="">
                             @else
-                                {{ strtoupper(substr($comment->user->name, 0, 1)) }}
+                                {{ strtoupper(substr($comment->user->name,0,1)) }}
                             @endif
                         </div>
-                        <div class="comment-bubble">
-                            <div class="comment-user">{{ $comment->user->name }} {{ $comment->user->nom_grade['emoji'] }}</div>
-                            <div class="comment-text">{{ $comment->contenu }}</div>
-                            <div class="comment-time">{{ $comment->created_at->diffForHumans() }}</div>
+                        <div style="flex:1">
+                            <div class="comment-bubble">
+                                <div class="comment-user">{{ $comment->user->name }} <span style="color:rgba(255,255,255,0.3);font-weight:400;">{{ $comment->created_at->diffForHumans() }}</span></div>
+                                <div class="comment-text">{{ $comment->contenu }}</div>
+                                <div class="comment-actions">
+                                    <button class="comment-act" onclick="likeComment({{ $comment->id }},this)">❤️ <span>{{ $comment->likes_count }}</span></button>
+                                    <button class="comment-act" onclick="showReply({{ $post->id }},{{ $comment->id }},'{{ addslashes($comment->user->name) }}')">💬 Répondre</button>
+                                </div>
+                            </div>
+                            <!-- Réponses -->
+                            <div id="replies-{{ $comment->id }}"></div>
+                            <div id="reply-form-{{ $comment->id }}" style="display:none;margin-top:6px;margin-left:10px;">
+                                <div class="comment-input-row">
+                                    <div class="av-sm">
+                                        @if(Auth::user()->photo_profil)
+                                            <img src="{{ Storage::url(Auth::user()->photo_profil) }}" alt="">
+                                        @else
+                                            {{ strtoupper(substr(Auth::user()->name,0,1)) }}
+                                        @endif
+                                    </div>
+                                    <textarea class="c-input" id="reply-input-{{ $comment->id }}" placeholder="Répondre à {{ $comment->user->name }}..." rows="1" oninput="autoResize(this)"></textarea>
+                                    <button class="c-send" onclick="sendReply({{ $post->id }},{{ $comment->id }})">↩</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     @endforeach
-
-                    <div class="comment-input-row" id="comment-form-{{ $post->id }}">
-                        <div class="comment-avatar">
-                            @if(Auth::user()->photo_profil)
-                                <img src="{{ Storage::url(Auth::user()->photo_profil) }}" alt="">
-                            @else
-                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                            @endif
-                        </div>
-                        <input type="text" class="comment-input" placeholder="Écrire un commentaire..." id="comment-input-{{ $post->id }}">
-                        <button class="comment-send" onclick="sendComment({{ $post->id }})">Envoyer</button>
-                    </div>
                 </div>
-            </div>
-            @endforeach
 
-            <div style="text-align:center; padding:20px;">
-                {{ $posts->links() }}
+                <div class="comment-input-row" style="margin-top:8px;">
+                    <div class="av-sm">
+                        @if(Auth::user()->photo_profil)
+                            <img src="{{ Storage::url(Auth::user()->photo_profil) }}" alt="">
+                        @else
+                            {{ strtoupper(substr(Auth::user()->name,0,1)) }}
+                        @endif
+                    </div>
+                    <div style="flex:1;position:relative;">
+                        <textarea class="c-input" id="cmt-input-{{ $post->id }}" placeholder="Écrire un commentaire..." rows="1" oninput="autoResize(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendComment({{ $post->id }});}"></textarea>
+                    </div>
+                    <button class="emoji-picker-btn" onclick="toggleEmojiPicker('cmt-emoji-{{ $post->id }}','cmt-input-{{ $post->id }}')">😊</button>
+                    <button class="c-send" onclick="sendComment({{ $post->id }})">Envoyer</button>
+                </div>
+                <div id="cmt-emoji-{{ $post->id }}" class="emoji-panel" style="margin-top:6px;"></div>
             </div>
-        @else
-            <div class="empty-feed">
-                <div style="font-size:64px; margin-bottom:16px;">🌿</div>
-                <h3 style="font-size:22px; color:rgba(255,255,255,0.7); margin-bottom:10px;">Aucune publication</h3>
-                <p>Soyez le premier à partager vos connaissances sur la santé naturelle !</p>
-            </div>
-        @endif
+        </div>
+        @empty
+        <div style="text-align:center;padding:60px 20px;color:rgba(255,255,255,0.4);">
+            <div style="font-size:56px;margin-bottom:14px;">🌿</div>
+            <h3 style="font-size:20px;margin-bottom:8px;color:rgba(255,255,255,0.7);">Aucune publication</h3>
+            <p style="font-size:13px;">Soyez le premier à partager !</p>
+        </div>
+        @endforelse
+
+        <div style="text-align:center;padding:16px;">{{ $posts->links() }}</div>
     </div>
 
     <!-- Sidebar droite -->
     <div class="sidebar">
         <div class="sidebar-card">
-            <div class="sidebar-title">Personnes à connaître</div>
+            <div class="sidebar-title">Membres à connaître</div>
             @foreach($users as $user)
-            <div class="user-mini">
-                <div class="avatar-sm">
+            <div class="user-card">
+                <div class="av-sm">
                     @if($user->photo_profil)
                         <img src="{{ Storage::url($user->photo_profil) }}" alt="">
                     @else
-                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                        {{ strtoupper(substr($user->name,0,1)) }}
                     @endif
                 </div>
-                <div>
-                    <div class="user-mini-name">{{ $user->name }}</div>
-                    <div class="user-mini-grade">{{ $user->nom_grade['emoji'] }} {{ $user->nom_grade['nom'] }}</div>
+                <div style="flex:1;min-width:0;">
+                    <div style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $user->name }}</div>
+                    <div style="font-size:10px;color:#00e5a0;">{{ $user->nom_grade['emoji'] }}</div>
                 </div>
-                @if(!Auth::user()->isFriendWith($user->id) && !Auth::user()->hasPendingRequestWith($user->id))
-                    <form method="POST" action="/friends/request/{{ $user->id }}">
-                        @csrf
-                        <button type="submit" class="btn-add">+ Ajouter</button>
-                    </form>
+                @if(!Auth::user()->isFriendWith($user->id)&&!Auth::user()->hasPendingRequestWith($user->id))
+                <form method="POST" action="/friends/request/{{ $user->id }}">
+                    @csrf
+                    <button type="submit" class="btn-add">+ Ami</button>
+                </form>
                 @endif
             </div>
             @endforeach
         </div>
-
-        <div class="sidebar-card">
-            <div class="sidebar-title">Groupes populaires</div>
-            <a href="/groups" style="display:block; text-align:center; background:rgba(0,229,160,0.15); border:1px solid rgba(0,229,160,0.3); color:#00e5a0; padding:10px; border-radius:10px; text-decoration:none; font-size:14px; font-weight:600;">
-                👨‍👩‍👧 Voir tous les groupes
-            </a>
-            <a href="/groups/create" style="display:block; text-align:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); padding:10px; border-radius:10px; text-decoration:none; font-size:14px; margin-top:8px;">
-                + Créer un groupe
-            </a>
-        </div>
-
-        <div class="sidebar-card" style="background:rgba(255,80,80,0.1); border-color:rgba(255,80,80,0.3);">
+        <div class="sidebar-card" style="background:rgba(255,80,80,0.08);border-color:rgba(255,80,80,0.2);">
             <div class="sidebar-title" style="color:#ff8080;">🆘 Urgence</div>
-            <div style="font-size:13px; color:rgba(255,255,255,0.8); margin-bottom:12px;">
-                Contactez le responsable BioLink :
-            </div>
-            <a href="https://wa.me/22962976186" target="_blank" style="display:flex; align-items:center; gap:8px; color:#25D366; text-decoration:none; font-size:14px; font-weight:600; margin-bottom:8px;">
-                📱 WhatsApp
-            </a>
-            <a href="mailto:jeanmarcdossou77@gmail.com" style="display:flex; align-items:center; gap:8px; color:#00e5a0; text-decoration:none; font-size:13px;">
-                📧 jeanmarcdossou77@gmail.com
-            </a>
+            <a href="https://wa.me/22962976186" target="_blank" style="display:flex;align-items:center;gap:8px;color:#25D366;text-decoration:none;font-size:13px;font-weight:600;margin-bottom:8px;">📱 WhatsApp</a>
+            <a href="mailto:jeanmarcdossou77@gmail.com" style="display:flex;align-items:center;gap:8px;color:#00e5a0;text-decoration:none;font-size:12px;">📧 Email</a>
         </div>
     </div>
 </div>
 
 <script>
-const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+const csrf = document.querySelector('meta[name="csrf-token"]').content;
 
-function previewImages(input) {
-    const preview = document.getElementById('imagePreview');
+// Emojis disponibles
+const EMOJIS = ['😊','😂','❤️','🔥','👍','🙏','😍','🤔','😢','😡','🎉','🌿','💪','✅','🌍','🤖','🧬','💊','🌺','⭐','😮','🏆','🎓','💡','🌱','🔬','🦠','💉','🧪','🌸'];
+
+function buildEmojiPanel(panelId, inputId) {
+    const panel = document.getElementById(panelId);
+    if (panel.innerHTML) return;
+    EMOJIS.forEach(e => {
+        const btn = document.createElement('button');
+        btn.className = 'emoji-btn';
+        btn.textContent = e;
+        btn.onclick = () => insertEmoji(inputId, e);
+        panel.appendChild(btn);
+    });
+}
+
+function toggleEmojiPicker(panelId, inputId) {
+    buildEmojiPanel(panelId, inputId);
+    const panel = document.getElementById(panelId);
+    panel.classList.toggle('open');
+}
+
+function insertEmoji(inputId, emoji) {
+    const el = document.getElementById(inputId);
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    el.value = el.value.substring(0, start) + emoji + el.value.substring(end);
+    el.selectionStart = el.selectionEnd = start + emoji.length;
+    el.focus();
+    autoResize(el);
+}
+
+function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 200) + 'px';
+}
+
+function handlePostEnter(e) {
+    // Shift+Enter = nouvelle ligne, Enter seul = rien de spécial (laisser par défaut)
+}
+
+// Prévisualisation images
+function previewImgs(input) {
+    const grid = document.getElementById('previewGrid');
+    grid.innerHTML = '';
     const files = Array.from(input.files).slice(0, 10);
-    preview.innerHTML = '';
     files.forEach((file, i) => {
         const reader = new FileReader();
         reader.onload = e => {
-            preview.innerHTML += `
+            grid.innerHTML += `
                 <div class="preview-item">
                     <img src="${e.target.result}" alt="">
-                    <button class="preview-remove" onclick="removeImage(${i})">×</button>
+                    <button class="preview-remove" onclick="removeImg(${i})" type="button">×</button>
                 </div>`;
         };
         reader.readAsDataURL(file);
     });
 }
 
-function removeImage(index) {
-    const input = document.getElementById('imageInput');
+function removeImg(idx) {
+    const input = document.getElementById('imgInput');
     const dt = new DataTransfer();
-    Array.from(input.files).forEach((file, i) => {
-        if (i !== index) dt.items.add(file);
-    });
+    Array.from(input.files).forEach((f, i) => { if (i !== idx) dt.items.add(f); });
     input.files = dt.files;
-    previewImages(input);
+    previewImgs(input);
 }
 
+// Like post
 function likePost(postId, btn) {
     fetch(`/posts/${postId}/like`, {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': csrfToken, 'Content-Type': 'application/json' }
+        headers: { 'X-CSRF-TOKEN': csrf }
     })
     .then(r => r.json())
     .then(data => {
         btn.classList.toggle('liked', data.liked);
+        document.getElementById(`like-emoji-${postId}`).textContent = data.liked ? '❤️' : '🤍';
         document.getElementById(`like-count-${postId}`).textContent = data.count;
     });
 }
 
-function toggleComments(postId) {
-    const section = document.getElementById(`comments-${postId}`);
-    section.classList.toggle('active');
-}
-
-function sendComment(postId) {
-    const input = document.getElementById(`comment-input-${postId}`);
-    const contenu = input.value.trim();
-    if (!contenu) return;
-
-    fetch(`/posts/${postId}/comment`, {
+// Réaction spécifique
+function reactPost(postId, emoji) {
+    fetch(`/posts/${postId}/like`, {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': csrfToken, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contenu })
+        headers: { 'X-CSRF-TOKEN': csrf }
     })
     .then(r => r.json())
     .then(data => {
-        const comment = data.comment;
-        const avatar = comment.user.photo
-            ? `<img src="/storage/${comment.user.photo}" alt="">`
-            : comment.user.name.charAt(0).toUpperCase();
-
-        const html = `
-            <div class="comment-item">
-                <div class="comment-avatar">${avatar}</div>
-                <div class="comment-bubble">
-                    <div class="comment-user">${comment.user.name} ${comment.user.grade}</div>
-                    <div class="comment-text">${comment.contenu}</div>
-                    <div class="comment-time">${comment.created_at}</div>
-                </div>
-            </div>`;
-
-        document.getElementById(`comment-form-${postId}`).insertAdjacentHTML('beforebegin', html);
-        document.getElementById(`comment-count-${postId}`).textContent = data.count;
-        input.value = '';
+        document.getElementById(`like-emoji-${postId}`).textContent = emoji;
+        document.getElementById(`like-count-${postId}`).textContent = data.count;
+        document.getElementById(`like-btn-${postId}`).classList.add('liked');
     });
 }
 
+// Toggle commentaires
+function toggleComments(postId) {
+    const w = document.getElementById(`comments-${postId}`);
+    w.classList.toggle('open');
+    if (w.classList.contains('open')) {
+        document.getElementById(`cmt-input-${postId}`)?.focus();
+    }
+}
+
+// Envoyer commentaire
+function sendComment(postId) {
+    const input = document.getElementById(`cmt-input-${postId}`);
+    const text = input.value.trim();
+    if (!text) return;
+
+    fetch(`/posts/${postId}/comment`, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': csrf, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contenu: text })
+    })
+    .then(r => r.json())
+    .then(data => {
+        const c = data.comment;
+        const av = c.user.photo
+            ? `<img src="/storage/${c.user.photo}" alt="">`
+            : c.user.name.charAt(0).toUpperCase();
+
+        document.getElementById(`comments-list-${postId}`).innerHTML += `
+            <div class="comment-item" id="comment-${c.id}">
+                <div class="av-sm">${av}</div>
+                <div style="flex:1">
+                    <div class="comment-bubble">
+                        <div class="comment-user">${c.user.name} <span style="color:rgba(255,255,255,0.3);font-weight:400;">${c.created_at}</span></div>
+                        <div class="comment-text">${c.contenu}</div>
+                        <div class="comment-actions">
+                            <button class="comment-act" onclick="likeComment(${c.id},this)">❤️ <span>0</span></button>
+                            <button class="comment-act" onclick="showReply(${postId},${c.id},'${c.user.name}')">💬 Répondre</button>
+                        </div>
+                    </div>
+                    <div id="replies-${c.id}"></div>
+                    <div id="reply-form-${c.id}" style="display:none;margin-top:6px;margin-left:10px;"></div>
+                </div>
+            </div>`;
+
+        document.getElementById(`cmt-count-${postId}`).textContent = data.count;
+        input.value = '';
+        input.style.height = 'auto';
+
+        // Fermer emoji panel
+        const ep = document.getElementById(`cmt-emoji-${postId}`);
+        if (ep) ep.classList.remove('open');
+    });
+}
+
+// Like commentaire
+function likeComment(commentId, btn) {
+    fetch(`/comments/${commentId}/like`, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': csrf }
+    })
+    .then(r => r.json())
+    .then(data => {
+        btn.classList.toggle('liked', data.liked);
+        btn.querySelector('span').textContent = data.count;
+    });
+}
+
+// Afficher formulaire réponse
+function showReply(postId, commentId, userName) {
+    const form = document.getElementById(`reply-form-${commentId}`);
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    if (form.style.display === 'block' && !form.innerHTML.trim()) {
+        form.innerHTML = `
+            <div class="comment-input-row">
+                <textarea class="c-input" id="ri-${commentId}" placeholder="Répondre à ${userName}..." rows="1" oninput="autoResize(this)"></textarea>
+                <button class="emoji-picker-btn" onclick="toggleEmojiPicker('re-emoji-${commentId}','ri-${commentId}')">😊</button>
+                <button class="c-send" onclick="sendReply(${postId},${commentId})">↩</button>
+            </div>
+            <div id="re-emoji-${commentId}" class="emoji-panel" style="margin-top:4px;"></div>`;
+    }
+    document.getElementById(`ri-${commentId}`)?.focus();
+}
+
+// Envoyer réponse
+function sendReply(postId, commentId) {
+    const input = document.getElementById(`ri-${commentId}`);
+    if (!input) return;
+    const text = input.value.trim();
+    if (!text) return;
+
+    fetch(`/posts/${postId}/comment`, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': csrf, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contenu: text, parent_id: commentId })
+    })
+    .then(r => r.json())
+    .then(data => {
+        const c = data.comment;
+        const av = c.user.photo
+            ? `<img src="/storage/${c.user.photo}" alt="">`
+            : c.user.name.charAt(0).toUpperCase();
+
+        const repliesDiv = document.getElementById(`replies-${commentId}`);
+        repliesDiv.innerHTML += `
+            <div class="reply-item">
+                <div class="av-sm">${av}</div>
+                <div class="comment-bubble">
+                    <div class="comment-user">${c.user.name}</div>
+                    <div class="comment-text">${c.contenu}</div>
+                </div>
+            </div>`;
+        input.value = '';
+        input.style.height = 'auto';
+    });
+}
+
+// Partager
 function sharePost(postId) {
-    navigator.clipboard.writeText(window.location.origin + '/feed#post-' + postId);
-    alert('Lien copié !');
+    const url = window.location.origin + '/feed#post-' + postId;
+    if (navigator.share) {
+        navigator.share({ title: 'BioLink', url });
+    } else {
+        navigator.clipboard.writeText(url);
+        alert('Lien copié !');
+    }
 }
 </script>
-
 </body>
 </html>

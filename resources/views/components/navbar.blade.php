@@ -1,163 +1,369 @@
 <link rel="stylesheet" href="/css/mobile.css">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="theme-color" content="#0a1628">
+
 <style>
-.biolink-nav {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 16px 40px; background: rgba(10,22,40,0.98);
+.bio-header {
+    background: rgba(10,22,40,0.97);
     border-bottom: 1px solid rgba(255,255,255,0.1);
-    position: sticky; top: 0; z-index: 1000;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 0;
 }
-.nav-logo { font-size: 26px; font-weight: 700; color: #00e5a0; text-decoration: none; letter-spacing: 1px; }
+.bio-nav {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    height: 56px;
+    gap: 8px;
+}
+.nav-logo {
+    font-size: 22px;
+    font-weight: 800;
+    color: #00e5a0;
+    text-decoration: none;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    margin-right: 8px;
+}
 .nav-logo span { color: white; }
-.nav-links { display: flex; align-items: center; gap: 6px; }
+.nav-logo svg { flex-shrink: 0; }
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex: 1;
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
 .nav-link {
-    color: rgba(255,255,255,0.7); text-decoration: none;
-    padding: 7px 14px; border-radius: 20px; font-size: 14px;
-    transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
-.nav-link:hover { color: #00e5a0; background: rgba(0,229,160,0.08); }
-.nav-link.active { color: #00e5a0; background: rgba(0,229,160,0.1); }
+.nav-link:hover { background: rgba(255,255,255,0.08); color: white; }
 .nav-btn {
-    background: #00e5a0; color: #0a1628 !important;
-    padding: 8px 18px; border-radius: 20px;
-    font-weight: 700; font-size: 14px;
+    background: #00e5a0;
+    color: #0a1628;
+    padding: 7px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 13px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: transform 0.2s;
 }
-.nav-btn:hover { background: #00c48c; }
-.nav-btn.gold { background: #ffa500; }
+.nav-btn:hover { transform: translateY(-1px); }
 .notif-btn {
-    position: relative; padding: 7px 12px;
-    color: rgba(255,255,255,0.7); text-decoration: none;
-    border-radius: 20px; transition: all 0.2s;
+    position: relative;
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+    padding: 6px 8px;
+    border-radius: 10px;
     font-size: 18px;
+    transition: all 0.2s;
 }
 .notif-btn:hover { background: rgba(255,255,255,0.08); }
-.notif-count {
-    position: absolute; top: 2px; right: 4px;
-    background: #ff5050; color: white;
-    font-size: 9px; font-weight: 700;
-    width: 16px; height: 16px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
+.notif-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #ff5050;
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .premium-badge-nav {
-    background: rgba(255,165,0,0.2); color: #ffa500;
-    padding: 2px 8px; border-radius: 10px; font-size: 10px;
-    font-weight: 700; margin-left: 4px;
+    background: linear-gradient(135deg, #ffa500, #ff6b35);
+    color: white;
+    font-size: 9px;
+    padding: 2px 5px;
+    border-radius: 6px;
+    font-weight: 700;
 }
-.avatar-nav {
-    width: 32px; height: 32px; border-radius: 50%;
+.nav-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
     background: linear-gradient(135deg, #00e5a0, #378ADD);
     display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 700; color: #0a1628;
+    font-size: 12px; font-weight: 700; color: #0a1628;
+    overflow: hidden; flex-shrink: 0;
 }
+.nav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+/* Dropdown */
 .dropdown { position: relative; }
+.dropdown-trigger {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.8);
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+.dropdown-trigger:hover { background: rgba(255,255,255,0.08); }
 .dropdown-menu {
-    display: none; position: absolute; right: 0; top: 44px;
-    background: #0d1f35; border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 14px; padding: 8px; min-width: 200px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5); z-index: 100;
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: #0d1f35;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 14px;
+    padding: 8px;
+    min-width: 200px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    z-index: 2000;
 }
 .dropdown:hover .dropdown-menu { display: block; }
 .dropdown-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 14px; border-radius: 10px;
-    color: rgba(255,255,255,0.8); text-decoration: none;
-    font-size: 14px; transition: background 0.2s;
+    display: block;
+    padding: 9px 12px;
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    font-size: 13px;
+    border-radius: 10px;
+    transition: all 0.2s;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
 }
-.dropdown-item:hover { background: rgba(255,255,255,0.07); color: white; }
+.dropdown-item:hover { background: rgba(255,255,255,0.08); color: white; }
 .dropdown-divider { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 6px 0; }
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7128721503592760"
-     crossorigin="anonymous"></script>
+/* Mobile hamburger */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    background: none;
+    border: none;
+    margin-left: auto;
+}
+.hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: white;
+    border-radius: 2px;
+    transition: all 0.3s;
+}
+.mobile-menu {
+    display: none;
+    background: #0d1f35;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 12px 16px;
+}
+.mobile-menu.open { display: block; }
+.mobile-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 8px;
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    font-size: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    border-radius: 0;
+    transition: background 0.2s;
+}
+.mobile-nav-link:hover { background: rgba(255,255,255,0.05); border-radius: 10px; }
+.mobile-user-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 8px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 8px;
+}
+@media (max-width: 900px) {
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+}
 </style>
 
-<nav class="biolink-nav">
-    <a href="/" class="nav-logo">
-    <svg width="32" height="32" viewBox="0 0 32 32" style="vertical-align:middle; margin-right:6px;">
-        <defs>
-            <linearGradient id="djmGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#00e5a0"/>
-                <stop offset="100%" style="stop-color:#378ADD"/>
-            </linearGradient>
-        </defs>
-        <text x="2" y="24" font-family="serif" font-size="20" font-weight="bold" fill="url(#djmGrad)">D</text>
-        <text x="10" y="20" font-family="serif" font-size="16" font-weight="bold" fill="url(#djmGrad)" opacity="0.8">J</text>
-        <text x="18" y="28" font-family="serif" font-size="20" font-weight="bold" fill="url(#djmGrad)">M</text>
-        <path d="M8 26 Q16 16 24 6" stroke="url(#djmGrad)" stroke-width="1" fill="none" opacity="0.4"/>
-    </svg>
-    Bio<span>Link</span>
-</a>
-
-    <div class="nav-links">
-    <a href="/recherche" class="nav-link">🔬 Pathologies</a>
-    <a href="/feed" class="nav-link">📱 Fil</a>
-    <a href="/groups" class="nav-link">👥 Groupes</a>
-    <a href="/ia" class="nav-link">🤖 IA</a>
-    <a href="/jobs" class="nav-link">💼 Emplois</a>
-    <a href="/aide" class="nav-link">❓ Aide</a>
-
-    @auth
-        <a href="/messages" class="notif-btn" title="Messages">💬
-            <span class="notif-count" id="msgCount" style="display:none">0</span>
-        </a>
-        <a href="/notifications" class="notif-btn" title="Notifications">🔔
-            <span class="notif-count" id="notifCount" style="display:none">0</span>
+<header class="bio-header">
+    <nav class="bio-nav">
+        <!-- Logo DJM -->
+        <a href="/" class="nav-logo">
+            <svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="djmG" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#00e5a0"/>
+                        <stop offset="100%" style="stop-color:#378ADD"/>
+                    </linearGradient>
+                </defs>
+                <circle cx="18" cy="18" r="17" fill="rgba(0,229,160,0.12)" stroke="url(#djmG)" stroke-width="1.5"/>
+                <!-- D -->
+                <text x="3" y="25" font-family="Georgia,serif" font-size="15" font-weight="bold" fill="#00e5a0">D</text>
+                <!-- J -->
+                <text x="13" y="23" font-family="Georgia,serif" font-size="13" font-weight="bold" fill="url(#djmG)">J</text>
+                <!-- M -->
+                <text x="21" y="26" font-family="Georgia,serif" font-size="14" font-weight="bold" fill="#378ADD">M</text>
+                <!-- Ligne décorative -->
+                <path d="M5 28 Q18 20 31 28" stroke="url(#djmG)" stroke-width="1" fill="none" opacity="0.4"/>
+            </svg>
+            Bio<span>Link</span>
         </a>
 
-        @if(Auth::user()->is_admin)
-            <a href="/admin" class="nav-link" style="color:#ffa500;">👑 Admin</a>
-        @endif
+        <!-- Liens desktop -->
+        <div class="nav-links">
+            <a href="/recherche" class="nav-link">🔬 Pathologies</a>
+            <a href="/feed" class="nav-link">📱 Fil</a>
+            <a href="/groups" class="nav-link">👥 Groupes</a>
+            <a href="/ia" class="nav-link">🤖 IA</a>
+            <a href="/jobs" class="nav-link">💼 Emplois</a>
+            <a href="/aide" class="nav-link">❓ Aide</a>
 
-        <div class="dropdown">
-            <div class="nav-link" style="cursor:pointer; gap:8px;">
-                <div class="avatar-nav">
-                    @if(Auth::user()->photo_profil)
-                        <img src="{{ Storage::url(Auth::user()->photo_profil) }}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="">
-                    @else
-                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                    @endif
+            @auth
+                <a href="/messages" class="notif-btn" title="Messages">
+                    💬
+                    @php $unread = \App\Models\Message::where('receiver_id', Auth::id())->where('lu', false)->count(); @endphp
+                    @if($unread > 0)<span class="notif-badge">{{ $unread }}</span>@endif
+                </a>
+                <a href="/notifications" class="notif-btn" title="Notifications">
+                    🔔
+                    @php $notifs = \App\Models\NotificationBiolink::where('user_id', Auth::id())->where('lu', false)->count(); @endphp
+                    @if($notifs > 0)<span class="notif-badge">{{ $notifs }}</span>@endif
+                </a>
+
+                @if(Auth::user()->is_admin)
+                    <a href="/admin" class="nav-link" style="color:#ffa500;">👑 Admin</a>
+                @endif
+
+                <div class="dropdown">
+                    <div class="dropdown-trigger">
+                        <div class="nav-avatar">
+                            @if(Auth::user()->photo_profil)
+                                <img src="{{ Storage::url(Auth::user()->photo_profil) }}" alt="">
+                            @else
+                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                            @endif
+                        </div>
+                        {{ explode(' ', Auth::user()->name)[0] }}
+                        @if(Auth::user()->is_premium)
+                            <span class="premium-badge-nav">★ PRO</span>
+                        @endif
+                        ▾
+                    </div>
+                    <div class="dropdown-menu">
+                        <a href="/dashboard" class="dropdown-item">🏠 Dashboard</a>
+                        <a href="/feed" class="dropdown-item">📱 Fil d'actualité</a>
+                        <a href="/profil" class="dropdown-item">👤 Mon profil</a>
+                        <a href="/friends/requests" class="dropdown-item">👥 Demandes d'amis</a>
+                        <a href="/messages" class="dropdown-item">💬 Messages</a>
+                        <a href="/remedes/create" class="dropdown-item">🌿 Publier un remède</a>
+                        <a href="/notifications" class="dropdown-item">🔔 Notifications</a>
+                        @if(!Auth::user()->is_premium)
+                            <a href="/premium" class="dropdown-item" style="color:#ffa500;">🌟 Passer Premium</a>
+                        @endif
+                        <div class="dropdown-divider"></div>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="dropdown-item" style="color:rgba(255,80,80,0.8);">🚪 Déconnexion</button>
+                        </form>
+                    </div>
                 </div>
-                {{ explode(' ', Auth::user()->name)[0] }}
-                @if(Auth::user()->is_premium)
-                    <span class="premium-badge-nav">★ PRO</span>
+            @else
+                <a href="/login" class="nav-link">Se connecter</a>
+                <a href="/register" class="nav-btn">Rejoindre BioLink</a>
+            @endauth
+        </div>
+
+        <!-- Hamburger mobile -->
+        <button class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- Menu mobile -->
+    <div class="mobile-menu" id="mobileMenu">
+        @auth
+        <div class="mobile-user-card">
+            <div class="nav-avatar" style="width:44px;height:44px;font-size:18px;">
+                @if(Auth::user()->photo_profil)
+                    <img src="{{ Storage::url(Auth::user()->photo_profil) }}" alt="">
+                @else
+                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                 @endif
-                ▾
             </div>
-            <div class="dropdown-menu">
-                <a href="/dashboard" class="dropdown-item">🏠 Dashboard</a>
-                <a href="/feed" class="dropdown-item">📱 Fil d'actualité</a>
-                <a href="/profil" class="dropdown-item">👤 Mon profil</a>
-                <a href="/friends/requests" class="dropdown-item">👥 Demandes d'amis</a>
-                <a href="/messages" class="dropdown-item">💬 Messages</a>
-                <a href="/remedes/create" class="dropdown-item">🌿 Publier un remède</a>
-                <a href="/notifications" class="dropdown-item">🔔 Notifications</a>
-                @if(!Auth::user()->is_premium)
-                    <a href="/premium" class="dropdown-item" style="color:#ffa500;">🌟 Passer Premium</a>
-                @endif
-                <hr class="dropdown-divider">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="dropdown-item" style="width:100%; background:none; border:none; cursor:pointer; text-align:left; color:rgba(255,80,80,0.8);">
-                        🚪 Déconnexion
-                    </button>
-                </form>
+            <div>
+                <div style="font-weight:700;font-size:15px;">{{ Auth::user()->name }}</div>
+                <div style="font-size:12px;color:#00e5a0;">{{ Auth::user()->nom_grade['emoji'] }} {{ Auth::user()->nom_grade['nom'] }} · ⭐ {{ Auth::user()->points }} pts</div>
             </div>
         </div>
-    @else
-        <a href="/login" class="nav-link">Se connecter</a>
-        <a href="/register" class="nav-btn">Rejoindre BioLink</a>
-    @endauth
-</div>
-</nav>
+        @endauth
 
-@auth
+        <a href="/recherche" class="mobile-nav-link">🔬 Pathologies</a>
+        <a href="/feed" class="mobile-nav-link">📱 Fil d'actualité</a>
+        <a href="/groups" class="mobile-nav-link">👥 Groupes</a>
+        <a href="/ia" class="mobile-nav-link">🤖 Assistant IA</a>
+        <a href="/jobs" class="mobile-nav-link">💼 Emplois</a>
+        <a href="/aide" class="mobile-nav-link">❓ Aide</a>
+        <a href="/messages" class="mobile-nav-link">💬 Messages</a>
+        <a href="/notifications" class="mobile-nav-link">🔔 Notifications</a>
+
+        @auth
+            <a href="/dashboard" class="mobile-nav-link">🏠 Dashboard</a>
+            <a href="/profil" class="mobile-nav-link">👤 Mon profil</a>
+            <a href="/friends/requests" class="mobile-nav-link">👥 Demandes d'amis</a>
+            <a href="/remedes/create" class="mobile-nav-link">🌿 Publier un remède</a>
+            @if(!Auth::user()->is_premium)
+                <a href="/premium" class="mobile-nav-link" style="color:#ffa500;">🌟 Passer Premium</a>
+            @endif
+            @if(Auth::user()->is_admin)
+                <a href="/admin" class="mobile-nav-link" style="color:#ffa500;">👑 Admin</a>
+            @endif
+            <div class="dropdown-divider" style="margin:8px 0;"></div>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="mobile-nav-link" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;font-family:inherit;color:rgba(255,80,80,0.8);">🚪 Déconnexion</button>
+            </form>
+        @else
+            <a href="/login" class="mobile-nav-link">🔐 Se connecter</a>
+            <a href="/register" class="mobile-nav-link" style="color:#00e5a0;font-weight:700;">🌿 Rejoindre BioLink</a>
+        @endauth
+    </div>
+</header>
+
 <script>
-fetch('/notifications/count')
-    .then(r => r.json())
-    .then(data => {
-        if (data.count > 0) {
-            const badge = document.getElementById('notifCount');
-            badge.textContent = data.count;
-            badge.style.display = 'flex';
-        }
-    });
+function toggleMobileMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+}
+// Fermer menu mobile en cliquant ailleurs
+document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobileMenu');
+    const btn = document.querySelector('.hamburger');
+    if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
+        menu.classList.remove('open');
+    }
+});
 </script>
-@endauth

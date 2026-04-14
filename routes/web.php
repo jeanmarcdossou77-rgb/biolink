@@ -146,3 +146,25 @@ Route::middleware('auth')->group(function() {
     Route::post('/profil/photo', [PhotoProfilController::class, 'update'])->name('photo.update');
     Route::delete('/profil/photo', [PhotoProfilController::class, 'delete'])->name('photo.delete');
 });
+
+Route::post('/comments/{id}/like', function($id) {
+    $comment = \App\Models\Comment::findOrFail($id);
+    $existing = \App\Models\Like::where('user_id', auth()->id())
+        ->where('likeable_id', $id)
+        ->where('likeable_type', \App\Models\Comment::class)
+        ->first();
+    if ($existing) {
+        $existing->delete();
+        $comment->decrement('likes_count');
+        $liked = false;
+    } else {
+        \App\Models\Like::create([
+            'user_id' => auth()->id(),
+            'likeable_id' => $id,
+            'likeable_type' => \App\Models\Comment::class,
+        ]);
+        $comment->increment('likes_count');
+        $liked = true;
+    }
+    return response()->json(['liked' => $liked, 'count' => $comment->fresh()->likes_count]);
+})->middleware('auth');

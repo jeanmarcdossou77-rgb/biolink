@@ -189,6 +189,23 @@
             gap: 12px;
         }
         .result-count span { color: #00e5a0; font-weight: 700; font-size: 18px; }
+
+        select {
+    background: #0d1f35 !important;
+    color: white !important;
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+select option {
+    background: #0d1f35 !important;
+    color: white !important;
+}
     </style>
 </head>
 <body>

@@ -105,7 +105,6 @@ public function send(Request $request, $userId)
         ]
     ]);
 }
-    }
 
     public function adminView()
     {

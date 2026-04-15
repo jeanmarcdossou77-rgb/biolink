@@ -14,7 +14,7 @@ class SearchController extends Controller
 
         // Recherche textuelle
         if ($request->filled('query')) {
-            $q = $request->query;
+            $q = $request->input('query');
             $query->where(function($q2) use ($q) {
                 $q2->where('nom', 'LIKE', "%{$q}%")
                    ->orWhere('description', 'LIKE', "%{$q}%")

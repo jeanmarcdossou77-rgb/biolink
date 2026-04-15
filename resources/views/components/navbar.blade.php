@@ -259,7 +259,7 @@
                 @endif
 
                 <div class="dropdown">
-                    <div class="dropdown-trigger" onclick="toggleDropdown()" id="dropdownTrigger">
+                    <div class="dropdown-trigger" onclick="toggleDropdown(event)" id="dropdownTrigger">
                         <div class="nav-avatar">
                             @if(Auth::user()->photo_profil)
                                 <img src="{{ Storage::url(Auth::user()->photo_profil) }}" alt="">
@@ -273,7 +273,7 @@
                         @endif
                         ▾
                     </div>
-                    <div class="dropdown-menu">
+                    <div class="dropdown-menu" id="mainDropdownMenu" style="display:none;">
                         <a href="/dashboard" class="dropdown-item">🏠 Dashboard</a>
                         <a href="/feed" class="dropdown-item">📱 Fil d'actualité</a>
                         <a href="/profil" class="dropdown-item">👤 Mon profil</a>
@@ -358,32 +358,26 @@ function toggleMobileMenu() {
     document.getElementById('mobileMenu').classList.toggle('open');
 }
 
-function toggleDropdown() {
-    const menu = document.querySelector('.dropdown-menu');
-    menu.classList.toggle('open');
+function toggleDropdown(event) {
     event.stopPropagation();
+    const menu = document.getElementById('mainDropdownMenu');
+    if (menu.style.display === 'block') {
+        menu.style.display = 'none';
+    } else {
+        menu.style.display = 'block';
+    }
 }
 
 document.addEventListener('click', function(e) {
-    // Fermer dropdown
-    const menu = document.querySelector('.dropdown-menu');
+    const menu = document.getElementById('mainDropdownMenu');
     const trigger = document.getElementById('dropdownTrigger');
     if (menu && trigger && !trigger.contains(e.target)) {
-        menu.classList.remove('open');
+        menu.style.display = 'none';
     }
-    // Fermer menu mobile
     const mobileMenu = document.getElementById('mobileMenu');
     const hamburger = document.querySelector('.hamburger');
     if (mobileMenu && hamburger && !mobileMenu.contains(e.target) && !hamburger.contains(e.target)) {
         mobileMenu.classList.remove('open');
-    }
-});
-// Fermer menu mobile en cliquant ailleurs
-document.addEventListener('click', function(e) {
-    const menu = document.getElementById('mobileMenu');
-    const btn = document.querySelector('.hamburger');
-    if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
-        menu.classList.remove('open');
     }
 });
 </script>

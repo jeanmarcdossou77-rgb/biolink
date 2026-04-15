@@ -31,38 +31,51 @@ public function index()
     return view('social.feed', compact('posts', 'users', 'tendances'));
 }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'contenu' => 'required_without:images|nullable|string',
-            'images.*' => 'nullable|image|max:5120',
-            'video' => 'nullable|mimetypes:video/mp4,video/webm,video/ogg|max:51200',
-        ]);
+public function store(Request $request)
+{
+    $request->validate([
+        'contenu' => 'nullable|string|max:5000',
+        'images.*' => 'nullable|image|max:10240|mimes:jpg,jpeg,png,gif,webp',
+        'video' => 'nullable|mimetypes:video/mp4,video/webm,video/ogg|max:102400',
+        'visibilite' => 'nullable|string',
+    ]);
 
-        $post = Post::create([
-            'user_id' => Auth::id(),
-            'contenu' => $request->contenu,
-            'type' => 'statut',
-            'visibilite' => $request->visibilite ?? 'public',
-        ]);
-
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $index => $image) {
-                $path = $image->store('posts', 'public');
-                $post->images()->create([
-                    'image_path' => $path,
-                    'ordre' => $index,
-                ]);
-            }
-        }
-
-        return redirect()->back()->with('success', '✅ Publication créée !');
-        // Gérer vidéo
-if ($request->hasFile('video')) {
-    $videoPath = $request->file('video')->store('videos', 'public');
-    $post->update(['video_path' => $videoPath]);
-}
+    // Au moins contenu ou image ou vidéo
+    if (!$request->contenu && !$request->hasFile('images') && !$request->hasFile('video')) {
+        return redirect()->back()->with('error', '❌ Ajoutez du texte, une photo ou une vidéo.');
     }
+
+    $videoPath = null;
+    if ($request->hasFile('video')) {
+        $videoPath = $request->file('video')->store('videos', 'public');
+    }
+
+    $post = Post::create([
+        'user_id' => Auth::id(),
+        'contenu' => $request->contenu ?? '',
+        'type' => 'statut',
+        'visibilite' => $request->visibilite ?? 'public',
+        'video_path' => $videoPath,
+        'group_id' => $request->group_id ?? null,
+    ]);
+
+    if ($request->hasFile('images')) {
+        $images = $request->file('images');
+        foreach (array_slice($images, 0, 10) as $index => $image) {
+            $path = $image->store('posts', 'public');
+            \App\Models\PostImage::create([
+                'post_id' => $post->id,
+                'image_path' => $path,
+                'ordre' => $index,
+            ]);
+        }
+    }
+
+    // Points pour la publication
+    Auth::user()->increment('points', 5);
+
+    return redirect()->back()->with('success', '✅ Publication créée avec succès !');
+}
 
     public function destroy($id)
     {

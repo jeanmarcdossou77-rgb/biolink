@@ -211,21 +211,40 @@
             <div class="post-body">{{ $post->contenu }}</div>
             @endif
 
-            @if($post->images->count()>0)
-            @php $c=min($post->images->count(),4); $cls=['','c1','c2','c3','c4'][$c]; @endphp
-            <div class="post-imgs {{ $cls }}">
-                @foreach($post->images->take(4) as $img)
-                <img src="{{ Storage::url($img->image_path) }}" alt="" loading="lazy">
-                @endforeach
-            </div>
-            @endif
+@if($post->images->count() > 0)
+@php
+    $imgCount = $post->images->count();
+    $gridClass = ['','c1','c2','c3','c4'][$imgCount > 4 ? 4 : $imgCount];
+@endphp
+<div class="post-imgs {{ $gridClass }}">
+    @foreach($post->images->take(4) as $img)
+    @php
+        $imgUrl = '';
+        if ($img->image_path) {
+            if (str_starts_with($img->image_path, 'http')) {
+                $imgUrl = $img->image_path;
+            } else {
+                $imgUrl = asset('storage/' . $img->image_path);
+            }
+        }
+    @endphp
+    @if($imgUrl)
+    <img src="{{ $imgUrl }}" alt="Image publication" loading="lazy"
+         onerror="this.style.display='none'"
+         style="cursor:pointer;" onclick="openImg('{{ $imgUrl }}')">
+    @endif
+    @endforeach
+</div>
+@endif
 
-            @if($post->video_path)
-<div style="padding:0 0 8px;">
-    <video src="{{ Storage::url($post->video_path) }}" controls
-        style="width:100%;max-height:400px;background:#000;display:block;"
-        preload="metadata">
-        Votre navigateur ne supporte pas la vidéo.
+@if($post->video_path)
+<div style="padding:0 0 8px;background:#000;">
+    <video
+        src="{{ asset('storage/' . $post->video_path) }}"
+        controls
+        preload="metadata"
+        style="width:100%;max-height:400px;display:block;"
+        onerror="this.parentElement.style.display='none'">
     </video>
 </div>
 @endif
@@ -627,6 +646,15 @@ function previewVideo(input) {
             <video src="${url}" controls style="max-width:100%;border-radius:10px;max-height:200px;"></video>
             <div style="font-size:11px;color:#00e5a0;margin-top:4px;">🎥 ${file.name} (${(file.size/1024/1024).toFixed(1)} Mo)</div>
         </div>`;
+}
+
+// Ouvrir image en grand
+function openImg(url) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;';
+    overlay.innerHTML = `<img src="${url}" style="max-width:95vw;max-height:95vh;object-fit:contain;border-radius:8px;">`;
+    overlay.onclick = () => overlay.remove();
+    document.body.appendChild(overlay);
 }
 </script>
 </body>

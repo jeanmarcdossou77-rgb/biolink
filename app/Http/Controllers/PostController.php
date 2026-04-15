@@ -35,12 +35,10 @@ public function store(Request $request)
 {
     $request->validate([
         'contenu' => 'nullable|string|max:5000',
-        'images.*' => 'nullable|image|max:10240|mimes:jpg,jpeg,png,gif,webp',
-        'video' => 'nullable|mimetypes:video/mp4,video/webm,video/ogg|max:102400',
-        'visibilite' => 'nullable|string',
+        'images.*' => 'nullable|image|max:10240',
+        'video' => 'nullable|file|max:102400',
     ]);
 
-    // Au moins contenu ou image ou vidéo
     if (!$request->contenu && !$request->hasFile('images') && !$request->hasFile('video')) {
         return redirect()->back()->with('error', '❌ Ajoutez du texte, une photo ou une vidéo.');
     }
@@ -60,21 +58,23 @@ public function store(Request $request)
     ]);
 
     if ($request->hasFile('images')) {
-        $images = $request->file('images');
-        foreach (array_slice($images, 0, 10) as $index => $image) {
-            $path = $image->store('posts', 'public');
-            \App\Models\PostImage::create([
-                'post_id' => $post->id,
-                'image_path' => $path,
-                'ordre' => $index,
-            ]);
+        foreach (array_slice($request->file('images'), 0, 10) as $index => $image) {
+            try {
+                $path = $image->store('posts', 'public');
+                \App\Models\PostImage::create([
+                    'post_id' => $post->id,
+                    'image_path' => $path,
+                    'ordre' => $index,
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Erreur upload image: ' . $e->getMessage());
+            }
         }
     }
 
-    // Points pour la publication
     Auth::user()->increment('points', 5);
 
-    return redirect()->back()->with('success', '✅ Publication créée avec succès !');
+    return redirect()->back()->with('success', '✅ Publication créée !');
 }
 
     public function destroy($id)

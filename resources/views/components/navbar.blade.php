@@ -138,7 +138,8 @@
     box-shadow: 0 8px 32px rgba(0,0,0,0.5);
     z-index: 2000;
 }
-.dropdown:hover .dropdown-menu { display: block; }
+.dropdown-menu { display: none; }
+.dropdown-menu.open { display: block; }
 .dropdown-item {
     display: block;
     padding: 9px 12px;
@@ -258,7 +259,7 @@
                 @endif
 
                 <div class="dropdown">
-                    <div class="dropdown-trigger">
+                    <div class="dropdown-trigger" onclick="toggleDropdown()" id="dropdownTrigger">
                         <div class="nav-avatar">
                             @if(Auth::user()->photo_profil)
                                 <img src="{{ Storage::url(Auth::user()->photo_profil) }}" alt="">
@@ -356,6 +357,27 @@
 function toggleMobileMenu() {
     document.getElementById('mobileMenu').classList.toggle('open');
 }
+
+function toggleDropdown() {
+    const menu = document.querySelector('.dropdown-menu');
+    menu.classList.toggle('open');
+    event.stopPropagation();
+}
+
+document.addEventListener('click', function(e) {
+    // Fermer dropdown
+    const menu = document.querySelector('.dropdown-menu');
+    const trigger = document.getElementById('dropdownTrigger');
+    if (menu && trigger && !trigger.contains(e.target)) {
+        menu.classList.remove('open');
+    }
+    // Fermer menu mobile
+    const mobileMenu = document.getElementById('mobileMenu');
+    const hamburger = document.querySelector('.hamburger');
+    if (mobileMenu && hamburger && !mobileMenu.contains(e.target) && !hamburger.contains(e.target)) {
+        mobileMenu.classList.remove('open');
+    }
+});
 // Fermer menu mobile en cliquant ailleurs
 document.addEventListener('click', function(e) {
     const menu = document.getElementById('mobileMenu');

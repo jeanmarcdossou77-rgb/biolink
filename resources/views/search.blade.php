@@ -308,47 +308,92 @@ document.querySelector('select[name="categorie"]').addEventListener('change', fu
     </div>
 </section>
 
-<div class="content">
-    @isset($pathologies)
-        @if(isset($query) || isset($categorie))
-            <div class="result-count">
-                🔬 <span>{{ $pathologies->count() }}</span> pathologie(s) trouvée(s)
-                @if(isset($query)) pour "<strong>{{ $query }}</strong>" @endif
-            </div>
-        @else
-            <div class="section-title">🌟 Pathologies récentes</div>
-        @endif
+<!-- Résultats -->
+<div style="max-width:1100px;margin:30px auto;padding:0 20px;">
 
-        @if($pathologies->count() > 0)
-            <div class="results-grid">
-                @foreach($pathologies as $pathologie)
-                    <a href="/pathologies/{{ $pathologie->id }}" class="pathologie-card">
-                        <div class="card-categorie">{{ $pathologie->categorie }}</div>
-                        <div class="card-nom">{{ $pathologie->nom }}</div>
-                        <div class="card-description">
-                            {{ Str::limit($pathologie->description, 100) }}
-                        </div>
-                        <div class="card-footer">
-                            <span>{{ $pathologie->remedes->count() }} remède(s)</span>
-                            <span>✅ Validé</span>
-                        </div>
-                    </a>
-                @endforeach
-            </div>
-        @else
-            <div class="empty-state">
-                <div class="icon">🔬</div>
-                <h3>Aucune pathologie trouvée</h3>
-                <p>Essayez avec d'autres mots clés ou soyez le premier à publier !</p>
-            </div>
-        @endif
-    @else
-        <div class="empty-state">
-            <div class="icon">🧬</div>
-            <h3>Aucune pathologie encore publiée</h3>
-            <p>Soyez le premier contributeur de BioLink !</p>
+    @if($pathologies->count() > 0)
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h2 style="font-size:20px;font-weight:700;">
+                🔬 {{ $pathologies->total() }} pathologie{{ $pathologies->total()>1?'s':'' }} trouvée{{ $pathologies->total()>1?'s':'' }}
+            </h2>
+            <span style="font-size:13px;color:rgba(255,255,255,0.5);">Page {{ $pathologies->currentPage() }} / {{ $pathologies->lastPage() }}</span>
         </div>
-    @endisset
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:30px;">
+            @foreach($pathologies as $pathologie)
+            <a href="/pathologies/{{ $pathologie->id }}" style="text-decoration:none;">
+                <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;transition:all 0.3s;height:100%;" onmouseover="this.style.borderColor='#00e5a0';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)';this.style.transform='translateY(0)'">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+                        <span style="background:rgba(0,229,160,0.15);color:#00e5a0;padding:3px 10px;border-radius:10px;font-size:11px;font-weight:600;">{{ $pathologie->categorie }}</span>
+                        @if($pathologie->gravite)
+                        <span style="font-size:11px;color:rgba(255,255,255,0.4);">
+                            @if($pathologie->gravite=='legere')🟢@elseif($pathologie->gravite=='moderee')🟡@elseif($pathologie->gravite=='grave')🔴@else⚫@endif
+                            {{ ucfirst($pathologie->gravite) }}
+                        </span>
+                        @endif
+                    </div>
+                    <h3 style="font-size:16px;font-weight:700;color:white;margin-bottom:8px;">{{ $pathologie->nom }}</h3>
+                    @if($pathologie->description)
+                    <p style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.6;margin-bottom:10px;">{{ Str::limit($pathologie->description, 100) }}</p>
+                    @endif
+                    @if($pathologie->symptomes)
+                    <p style="font-size:12px;color:rgba(255,255,255,0.4);">🩺 {{ Str::limit($pathologie->symptomes, 80) }}</p>
+                    @endif
+                    <div style="margin-top:12px;display:flex;gap:10px;align-items:center;">
+                        @if($pathologie->contagieux)
+                        <span style="font-size:11px;background:rgba(255,80,80,0.15);color:#ff8080;padding:2px 8px;border-radius:8px;">⚠️ Contagieux</span>
+                        @endif
+                        <span style="font-size:11px;color:rgba(255,255,255,0.3);margin-left:auto;">👁️ {{ $pathologie->vues ?? 0 }}</span>
+                    </div>
+                </div>
+            </a>
+            @endforeach
+        </div>
+
+        <div style="display:flex;justify-content:center;">
+            {{ $pathologies->links() }}
+        </div>
+
+    @elseif(request()->hasAny(['query','categorie','gravite','contagieux']))
+        <div style="text-align:center;padding:60px 20px;">
+            <div style="font-size:56px;margin-bottom:16px;">🔍</div>
+            <h3 style="font-size:20px;color:rgba(255,255,255,0.7);margin-bottom:10px;">Aucun résultat trouvé</h3>
+            <p style="color:rgba(255,255,255,0.5);margin-bottom:20px;">Essayez avec d'autres mots-clés ou catégories</p>
+            <a href="/recherche" style="background:#00e5a0;color:#0a1628;padding:10px 24px;border-radius:20px;text-decoration:none;font-weight:700;">Réinitialiser la recherche</a>
+        </div>
+
+    @else
+        <!-- Affichage par défaut — toutes les pathologies récentes -->
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:20px;">🌟 Pathologies récentes</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:30px;">
+            @foreach($recentes as $pathologie)
+            <a href="/pathologies/{{ $pathologie->id }}" style="text-decoration:none;">
+                <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;transition:all 0.3s;" onmouseover="this.style.borderColor='#00e5a0'" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'">
+                    <span style="background:rgba(0,229,160,0.15);color:#00e5a0;padding:3px 10px;border-radius:10px;font-size:11px;font-weight:600;">{{ $pathologie->categorie }}</span>
+                    <h3 style="font-size:16px;font-weight:700;color:white;margin:10px 0 8px;">{{ $pathologie->nom }}</h3>
+                    <p style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.6;">{{ Str::limit($pathologie->description, 100) }}</p>
+                </div>
+            </a>
+            @endforeach
+        </div>
+
+        <!-- Toutes les pathologies paginées -->
+        <h2 style="font-size:20px;font-weight:700;margin-bottom:20px;">📋 Toutes les pathologies ({{ \App\Models\Pathologie::where('approuve',true)->count() }})</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;">
+            @foreach(\App\Models\Pathologie::where('approuve',true)->orderBy('nom')->take(24)->get() as $p)
+            <a href="/pathologies/{{ $p->id }}" style="text-decoration:none;">
+                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;transition:all 0.3s;" onmouseover="this.style.borderColor='#00e5a0'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+                    <span style="background:rgba(55,138,221,0.15);color:#378ADD;padding:2px 8px;border-radius:8px;font-size:10px;">{{ $p->categorie }}</span>
+                    <h3 style="font-size:14px;font-weight:700;color:white;margin:8px 0 4px;">{{ $p->nom }}</h3>
+                    <p style="font-size:12px;color:rgba(255,255,255,0.5);">{{ Str::limit($p->description, 70) }}</p>
+                </div>
+            </a>
+            @endforeach
+        </div>
+        <div style="text-align:center;margin-top:24px;">
+            <a href="/recherche?query=a" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.2);color:white;padding:10px 24px;border-radius:20px;text-decoration:none;font-size:14px;">Voir toutes les pathologies →</a>
+        </div>
+    @endif
 </div>
 
 </body>

@@ -208,3 +208,10 @@ Route::middleware('auth')->group(function() {
     Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications');
     Route::post('/notifications/mark-all-read', [App\Http\Controllers\NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
 });
+
+// Servir les fichiers storage sur Railway
+Route::get('/storage/{path}', function($path) {
+    $fullPath = storage_path('app/public/' . $path);
+    if (!file_exists($fullPath)) abort(404);
+    return response()->file($fullPath);
+})->where('path', '.*');

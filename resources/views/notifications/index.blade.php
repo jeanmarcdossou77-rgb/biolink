@@ -36,6 +36,25 @@
 <nav>
     <a href="/" class="logo">Bio<span>Link</span></a>
     <a href="/dashboard" style="color:rgba(255,255,255,0.7); text-decoration:none; font-size:14px;">← Dashboard</a>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+    <h1 style="font-size:24px;font-weight:800;">🔔 Notifications</h1>
+    <button onclick="markAllRead()" style="background:rgba(0,229,160,0.15);border:1px solid rgba(0,229,160,0.3);color:#00e5a0;padding:8px 16px;border-radius:10px;cursor:pointer;font-size:13px;">
+        ✅ Tout marquer comme lu
+    </button>
+</div>
+
+<script>
+function markAllRead() {
+    fetch('/notifications/mark-all-read', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+    }).then(() => {
+        document.querySelectorAll('.notif-unread').forEach(el => el.classList.remove('notif-unread'));
+        document.getElementById('notif-badge') && (document.getElementById('notif-badge').style.display = 'none');
+        document.getElementById('msg-badge') && (document.getElementById('msg-badge').style.display = 'none');
+    });
+}
+</script>
 </nav>
 <div class="container">
     <h1>🔔 Mes notifications</h1>

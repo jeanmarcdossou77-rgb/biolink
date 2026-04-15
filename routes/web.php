@@ -203,3 +203,8 @@ Route::middleware('auth')->post('/signaler/{type}/{id}', function($type, $id) {
 })->name('signaler');
 
 Route::post('/ia/question', [App\Http\Controllers\IAController::class, 'question'])->name('ia.question');
+
+Route::middleware('auth')->group(function() {
+    Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications');
+    Route::post('/notifications/mark-all-read', [App\Http\Controllers\NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
+});

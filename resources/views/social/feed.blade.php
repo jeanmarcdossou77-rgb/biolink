@@ -55,6 +55,8 @@
         .post-grade { font-size:11px; color:#00e5a0; }
         .post-time { font-size:11px; color:rgba(255,255,255,0.4); margin-left:auto; }
         .post-body { padding:10px 16px 14px; font-size:14px; line-height:1.8; color:rgba(255,255,255,0.9); white-space:pre-wrap; word-break:break-word; }
+        .post-body a { color: #378ADD; text-decoration: none; }
+        .post-body a:hover { text-decoration: underline; }
         /* Images grille */
         .post-imgs { overflow:hidden; margin-bottom:2px; }
         .post-imgs.c1 img { width:100%; max-height:380px; object-fit:cover; display:block; }
@@ -208,7 +210,11 @@
             </div>
 
             @if($post->contenu)
-            <div class="post-body">{{ $post->contenu }}</div>
+            <div class="post-body">{!! nl2br(preg_replace(
+    '/(https?:\/\/[^\s<>"]+[^\s<>".,:;!?)\'"]+)/i',
+    '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>',
+    e($post->contenu)
+)) !!}</div>
             @endif
 
 @if($post->images->count() > 0)
@@ -296,7 +302,11 @@
                         <div style="flex:1">
                             <div class="comment-bubble">
                                 <div class="comment-user">{{ $comment->user->name }} <span style="color:rgba(255,255,255,0.3);font-weight:400;">{{ $comment->created_at->diffForHumans() }}</span></div>
-                                <div class="comment-text">{{ $comment->contenu }}</div>
+                                <div class="comment-text">{!! nl2br(preg_replace(
+    '/(https?:\/\/[^\s<>"]+[^\s<>".,:;!?)\'"]+)/i',
+    '<a href="$1" target="_blank" rel="noopener noreferrer" style="color:#378ADD;">$1</a>',
+    e($comment->contenu)
+)) !!}</div>
                                 <div class="comment-actions">
                                     <button class="comment-act" onclick="likeComment({{ $comment->id }},this)">❤️ <span>{{ $comment->likes_count }}</span></button>
                                     <button class="comment-act" onclick="showReply({{ $post->id }},{{ $comment->id }},'{{ addslashes($comment->user->name) }}')">💬 Répondre</button>

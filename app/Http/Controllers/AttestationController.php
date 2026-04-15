@@ -2,39 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Remede;
+use App\Models\Pathologie;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AttestationController extends Controller
 {
-    public function telecharger($id)
+    public function download()
     {
-        $user = User::findOrFail($id);
+        $user = Auth::user();
 
-        if (Auth::id() !== $user->id) {
-            abort(403);
-        }
+        // Récupérer les pathologies sur lesquelles l'utilisateur a publié
+        $pathologiesPubliees = Remede::where('user_id', $user->id)
+            ->where('approuve', true)
+            ->with('pathologie')
+            ->get()
+            ->pluck('pathologie.nom')
+            ->filter()
+            ->unique()
+            ->values()
+            ->toArray();
 
-        if ($user->grade_id < 3) {
-            return redirect('/profil')->with('error', '❌ Vous devez atteindre le grade Chercheur Actif.');
-        }
+        $pdf = Pdf::loadView('attestation.pdf', compact('user', 'pathologiesPubliees'))
+            ->setPaper('a4', 'portrait')
+            ->setOptions([
+                'dpi' => 150,
+                'defaultFont' => 'DejaVu Sans',
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'margin_top' => 0,
+                'margin_right' => 0,
+                'margin_bottom' => 0,
+                'margin_left' => 0,
+            ]);
 
-        $grades = [
-            1 => ['nom' => 'Débutant', 'emoji' => '🌱'],
-            2 => ['nom' => 'Contributeur', 'emoji' => '🌿'],
-            3 => ['nom' => 'Chercheur Actif', 'emoji' => '🔬'],
-            4 => ['nom' => 'Expert', 'emoji' => '⭐'],
-            5 => ['nom' => 'Leader Scientifique', 'emoji' => '🏆'],
-        ];
+        $filename = 'Attestation_BioLink_' . str_replace(' ', '_', $user->name) . '_' . now()->format('Y') . '.pdf';
 
-        $grade = $grades[$user->grade_id];
-        $date = now()->format('d/m/Y');
-
-        $pdf = Pdf::loadView('attestation.pdf', compact('user', 'grade', 'date'));
-        $pdf->setPaper('A4', 'landscape');
-
-        return $pdf->download('Attestation_BioLink_' . str_replace(' ', '_', $user->name) . '.pdf');
+        return $pdf->download($filename);
     }
 }

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>BioLink – Assistant IA</title>
     <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -207,6 +208,13 @@ html, body {
 </div>
 
 <script>
+// S'assurer que le meta CSRF existe
+let csrfToken = '';
+const metaCsrf = document.querySelector('meta[name="csrf-token"]');
+if (metaCsrf) {
+    csrfToken = metaCsrf.getAttribute('content');
+}
+
 function autoResize(el) {
     el.style.height = 'auto';
     el.style.height = Math.min(el.scrollHeight, 120) + 'px';
@@ -219,22 +227,24 @@ function askQuestion(q) {
 
 function sendMessage() {
     const input = document.getElementById('chatInput');
+    const msgs = document.getElementById('chatMessages');
     const text = input.value.trim();
     if (!text) return;
 
-    const msgs = document.getElementById('chatMessages');
-
+    // Afficher message utilisateur
     msgs.innerHTML += `
         <div class="message-user">
-            <div class="user-bubble">${text}</div>
+            <div class="user-bubble">${escapeHtml(text)}</div>
         </div>`;
 
     input.value = '';
     input.style.height = 'auto';
     msgs.scrollTop = msgs.scrollHeight;
 
+    // Afficher indicateur de chargement
+    const typingId = 'typing-' + Date.now();
     msgs.innerHTML += `
-        <div class="message-ia" id="typing">
+        <div class="message-ia" id="${typingId}">
             <div class="ia-avatar">🤖</div>
             <div class="ia-bubble">
                 <div class="typing-indicator">
@@ -246,33 +256,65 @@ function sendMessage() {
         </div>`;
     msgs.scrollTop = msgs.scrollHeight;
 
+    // Appel API
     fetch('/ia/question', {
         method: 'POST',
         headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest'
         },
         body: JSON.stringify({ question: text })
     })
-    .then(r => r.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Erreur HTTP: ' + response.status);
+        }
+        return response.json();
+    })
     .then(data => {
-        document.getElementById('typing')?.remove();
+        const typingEl = document.getElementById(typingId);
+        if (typingEl) typingEl.remove();
+
+        const reponse = data.reponse || 'Désolé, je n\'ai pas pu traiter votre demande.';
         msgs.innerHTML += `
             <div class="message-ia">
                 <div class="ia-avatar">🤖</div>
-                <div class="ia-bubble">${data.reponse}</div>
+                <div class="ia-bubble">${reponse}</div>
             </div>`;
         msgs.scrollTop = msgs.scrollHeight;
     })
-    .catch(() => {
-        document.getElementById('typing')?.remove();
+    .catch(err => {
+        const typingEl = document.getElementById(typingId);
+        if (typingEl) typingEl.remove();
+
+        console.error('Erreur IA:', err);
         msgs.innerHTML += `
             <div class="message-ia">
                 <div class="ia-avatar">🤖</div>
-                <div class="ia-bubble">❌ Une erreur est survenue. Réessayez.</div>
+                <div class="ia-bubble">
+                    ❌ Erreur de connexion. Vérifiez votre connexion internet et réessayez.<br>
+                    <small style="color:rgba(255,255,255,0.4);">${err.message}</small>
+                </div>
             </div>`;
+        msgs.scrollTop = msgs.scrollHeight;
     });
 }
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(text));
+    return div.innerHTML;
+}
+
+// Envoyer avec Entrée
+document.getElementById('chatInput')?.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+});
 </script>
 </body>
 </html>

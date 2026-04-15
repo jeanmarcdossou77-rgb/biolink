@@ -202,7 +202,7 @@ Route::middleware('auth')->post('/signaler/{type}/{id}', function($type, $id) {
     return response()->json(['success' => true]);
 })->name('signaler');
 
-Route::post('/ia/question', [App\Http\Controllers\IAController::class, 'question'])->name('ia.question');
+Route::post('/ia/question', [App\Http\Controllers\IAController::class, 'question'])->name('ia.question')->middleware('web');
 
 Route::middleware('auth')->group(function() {
     Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications');

@@ -40,5 +40,10 @@ class AttestationController extends Controller
         $filename = 'Attestation_BioLink_' . str_replace(' ', '_', $user->name) . '_' . now()->format('Y') . '.pdf';
 
         return $pdf->download($filename);
+
+        public function telecharger($id)
+{
+    return "Téléchargement attestation ID : " . $id;
+}
     }
 }

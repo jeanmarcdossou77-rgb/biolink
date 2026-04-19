@@ -603,21 +603,33 @@ function showReply(postId, commentId, userName) {
         if (!formDiv.innerHTML.trim()) {
             const authAvatar = '{{ strtoupper(substr(Auth::user()->name,0,1)) }}';
             formDiv.innerHTML = `
-                <div style="display:flex;gap:8px;align-items:flex-end;margin-top:6px;margin-left:20px;">
-                    <div class="av-sm">${authAvatar}</div>
-                    <textarea
-                        class="c-input"
-                        id="ri-${commentId}"
-                        placeholder="Répondre à ${escapeHtml(userName)}..."
-                        rows="1"
-                        oninput="autoResize(this)"
-                        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendReply(${postId},${commentId});}"
-                        style="flex:1;"
-                    ></textarea>
-                    <button class="emoji-picker-btn" onclick="toggleEmojiPicker('re-emoji-${commentId}','ri-${commentId}')">😊</button>
-                    <button class="c-send" onclick="sendReply(${postId},${commentId})">↩ Envoyer</button>
+    <div style="margin-top:8px;margin-left:20px;">
+        <div style="display:flex;gap:8px;align-items:flex-start;">
+            <div class="av-sm">${authAvatar}</div>
+            <div style="flex:1;">
+                <textarea
+                    class="c-input"
+                    id="ri-${commentId}"
+                    placeholder="Répondre à ${escapeHtml(userName)}..."
+                    rows="2"
+                    oninput="autoResize(this)"
+                    style="width:100%;margin-bottom:6px;"
+                ></textarea>
+                <div style="display:flex;justify-content:flex-end;gap:8px;">
+                    <button type="button" onclick="toggleEmojiPicker('re-emoji-${commentId}','ri-${commentId}')" style="background:none;border:none;cursor:pointer;font-size:18px;">😊</button>
+                    <button type="button" onclick="sendReply(${postId},${commentId})"
+                        style="background:#00e5a0;color:#0a1628;border:none;padding:8px 18px;border-radius:20px;font-weight:700;font-size:13px;cursor:pointer;">
+                        ↩ Envoyer
+                    </button>
+                    <button type="button" onclick="document.getElementById('reply-form-${commentId}').style.display='none'"
+                        style="background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.15);padding:8px 14px;border-radius:20px;font-size:13px;cursor:pointer;">
+                        Annuler
+                    </button>
                 </div>
-                <div id="re-emoji-${commentId}" class="emoji-panel" style="margin-top:4px;margin-left:20px;"></div>`;
+                <div id="re-emoji-${commentId}" class="emoji-panel" style="margin-top:4px;"></div>
+            </div>
+        </div>
+    </div>`;
         }
         const textarea = document.getElementById('ri-' + commentId);
         if (textarea) textarea.focus();

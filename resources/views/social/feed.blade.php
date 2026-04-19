@@ -55,6 +55,10 @@
         .post-grade { font-size:11px; color:#00e5a0; }
         .post-time { font-size:11px; color:rgba(255,255,255,0.4); margin-left:auto; }
         .post-body { padding:10px 16px 14px; font-size:14px; line-height:1.8; color:rgba(255,255,255,0.9); white-space:pre-wrap; word-break:break-word; }
+        .post-body-truncated { overflow:hidden; }
+        .post-body-truncated.collapsed { max-height: 120px; -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%); mask-image: linear-gradient(to bottom, black 60%, transparent 100%); }
+        .voir-plus-btn { background:none; border:none; color:#00e5a0; font-size:13px; font-weight:600; cursor:pointer; padding:4px 0 8px 16px; display:block; }
+        .voir-plus-btn:hover { text-decoration:underline; }
         .post-body a { color: #378ADD; text-decoration: none; }
         .post-body a:hover { text-decoration: underline; }
         /* Images grille */
@@ -210,12 +214,22 @@
             </div>
 
             @if($post->contenu)
-            <div class="post-body">{!! nl2br(preg_replace(
-    '/(https?:\/\/[^\s<>"]+[^\s<>".,:;!?)\'"]+)/i',
-    '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>',
-    e($post->contenu)
-)) !!}</div>
-            @endif
+@php $isLong = strlen($post->contenu) > 300 || substr_count($post->contenu, "\n") > 4; @endphp
+<div class="post-body post-body-truncated {{ $isLong ? 'collapsed' : '' }}"
+     id="post-body-{{ $post->id }}">
+    {!! nl2br(preg_replace(
+        '/(https?:\/\/[^\s<>"]+[^\s<>".,:;!?)\'"]+)/i',
+        '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>',
+        e($post->contenu)
+    )) !!}
+</div>
+@if($isLong)
+<button class="voir-plus-btn" id="vp-btn-{{ $post->id }}"
+    onclick="toggleVoirPlus({{ $post->id }})">
+    ... Voir plus
+</button>
+@endif
+@endif
 
            @if($post->images->count() > 0)
 @php
@@ -580,50 +594,88 @@ function likeComment(commentId, btn) {
 
 // Afficher formulaire réponse
 function showReply(postId, commentId, userName) {
-    const form = document.getElementById(`reply-form-${commentId}`);
-    form.style.display = form.style.display === 'none' ? 'block' : 'none';
-    if (form.style.display === 'block' && !form.innerHTML.trim()) {
-        form.innerHTML = `
-            <div class="comment-input-row">
-                <textarea class="c-input" id="ri-${commentId}" placeholder="Répondre à ${userName}..." rows="1" oninput="autoResize(this)"></textarea>
-                <button class="emoji-picker-btn" onclick="toggleEmojiPicker('re-emoji-${commentId}','ri-${commentId}')">😊</button>
-                <button class="c-send" onclick="sendReply(${postId},${commentId})">↩</button>
-            </div>
-            <div id="re-emoji-${commentId}" class="emoji-panel" style="margin-top:4px;"></div>`;
+    const formDiv = document.getElementById('reply-form-' + commentId);
+    if (!formDiv) return;
+
+    if (formDiv.style.display === 'none' || formDiv.style.display === '') {
+        formDiv.style.display = 'block';
+        // Créer le formulaire si vide
+        if (!formDiv.innerHTML.trim()) {
+            const authAvatar = '{{ strtoupper(substr(Auth::user()->name,0,1)) }}';
+            formDiv.innerHTML = `
+                <div style="display:flex;gap:8px;align-items:flex-end;margin-top:6px;margin-left:20px;">
+                    <div class="av-sm">${authAvatar}</div>
+                    <textarea
+                        class="c-input"
+                        id="ri-${commentId}"
+                        placeholder="Répondre à ${escapeHtml(userName)}..."
+                        rows="1"
+                        oninput="autoResize(this)"
+                        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendReply(${postId},${commentId});}"
+                        style="flex:1;"
+                    ></textarea>
+                    <button class="emoji-picker-btn" onclick="toggleEmojiPicker('re-emoji-${commentId}','ri-${commentId}')">😊</button>
+                    <button class="c-send" onclick="sendReply(${postId},${commentId})">↩ Envoyer</button>
+                </div>
+                <div id="re-emoji-${commentId}" class="emoji-panel" style="margin-top:4px;margin-left:20px;"></div>`;
+        }
+        const textarea = document.getElementById('ri-' + commentId);
+        if (textarea) textarea.focus();
+    } else {
+        formDiv.style.display = 'none';
     }
-    document.getElementById(`ri-${commentId}`)?.focus();
 }
 
 // Envoyer réponse
 function sendReply(postId, commentId) {
-    const input = document.getElementById(`ri-${commentId}`);
+    const input = document.getElementById('ri-' + commentId);
     if (!input) return;
     const text = input.value.trim();
     if (!text) return;
 
-    fetch(`/posts/${postId}/comment`, {
+    const btn = input.nextElementSibling?.nextElementSibling || input.parentElement.querySelector('button');
+
+    fetch('/posts/' + postId + '/comment', {
         method: 'POST',
-        headers: { 'X-CSRF-TOKEN': csrf, 'Content-Type': 'application/json' },
+        headers: {
+            'X-CSRF-TOKEN': csrf,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
         body: JSON.stringify({ contenu: text, parent_id: commentId })
     })
-    .then(r => r.json())
-    .then(data => {
+    .then(function(r) {
+        if (!r.ok) throw new Error('Erreur ' + r.status);
+        return r.json();
+    })
+    .then(function(data) {
         const c = data.comment;
-        const av = c.user.photo
-            ? `<img src="/storage/${c.user.photo}" alt="">`
-            : c.user.name.charAt(0).toUpperCase();
+        const repliesDiv = document.getElementById('replies-' + commentId);
+        if (repliesDiv) {
+            const avatarHtml = c.user.photo
+                ? '<img src="/storage/' + c.user.photo + '" alt="" style="width:100%;height:100%;object-fit:cover;">'
+                : c.user.name.charAt(0).toUpperCase();
 
-        const repliesDiv = document.getElementById(`replies-${commentId}`);
-        repliesDiv.innerHTML += `
-            <div class="reply-item">
-                <div class="av-sm">${av}</div>
-                <div class="comment-bubble">
-                    <div class="comment-user">${c.user.name}</div>
-                    <div class="comment-text">${c.contenu}</div>
-                </div>
-            </div>`;
+            repliesDiv.innerHTML += `
+                <div class="reply-item" style="display:flex;gap:8px;margin-top:8px;margin-left:20px;">
+                    <div class="av-sm">${avatarHtml}</div>
+                    <div class="comment-bubble">
+                        <div class="comment-user">${c.user.name}</div>
+                        <div class="comment-text">${escapeHtml(c.contenu)}</div>
+                        <div class="comment-time">${c.created_at}</div>
+                    </div>
+                </div>`;
+        }
         input.value = '';
         input.style.height = 'auto';
+
+        // Masquer le formulaire de réponse
+        const replyForm = document.getElementById('reply-form-' + commentId);
+        if (replyForm) replyForm.style.display = 'none';
+    })
+    .catch(function(err) {
+        console.error('Erreur envoi réponse:', err);
+        alert('Erreur lors de l\'envoi. Réessayez.');
     });
 }
 
@@ -671,6 +723,20 @@ function openImg(url) {
     overlay.innerHTML = `<img src="${url}" style="max-width:95vw;max-height:95vh;object-fit:contain;border-radius:8px;">`;
     overlay.onclick = () => overlay.remove();
     document.body.appendChild(overlay);
+}
+
+function toggleVoirPlus(postId) {
+    const body = document.getElementById('post-body-' + postId);
+    const btn = document.getElementById('vp-btn-' + postId);
+    if (!body || !btn) return;
+
+    if (body.classList.contains('collapsed')) {
+        body.classList.remove('collapsed');
+        btn.textContent = 'Voir moins';
+    } else {
+        body.classList.add('collapsed');
+        btn.textContent = '... Voir plus';
+    }
 }
 </script>
 </body>

@@ -14,15 +14,19 @@ class PostController extends Controller
 {
 public function index()
 {
-    $posts = Post::with(['user','images','comments.user'])
-        ->where('visibilite','public')
-        ->orWhere('user_id', Auth::id())
+    $posts = Post::with(['user', 'images', 'comments.user'])
+        ->where(function($q) {
+            $q->where('visibilite', 'public')
+              ->orWhere('user_id', Auth::id());
+        })
         ->latest()
         ->paginate(10);
 
-    $users = User::where('id','!=',Auth::id())->take(6)->get();
+    $users = User::where('id', '!=', Auth::id())
+        ->orderBy('points', 'desc')
+        ->take(6)
+        ->get();
 
-    // Tendances — pathologies les plus vues cette semaine
     $tendances = \App\Models\Pathologie::where('approuve', true)
         ->orderBy('vues', 'desc')
         ->take(5)

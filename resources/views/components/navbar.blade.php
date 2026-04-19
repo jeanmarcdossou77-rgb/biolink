@@ -111,7 +111,7 @@
 }
 .nav-avatar img { width: 100%; height: 100%; object-fit: cover; }
 /* Dropdown */
-.dropdown { position: relative; }
+.dropdown { position: relative; display: inline-block; }
 .dropdown-trigger {
     display: flex;
     align-items: center;
@@ -123,27 +123,27 @@
     color: rgba(255,255,255,0.8);
     transition: background 0.2s;
     white-space: nowrap;
+    user-select: none;
 }
 .dropdown-trigger:hover { background: rgba(255,255,255,0.08); }
 .dropdown-menu {
-    display: none;
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 10px);
     right: 0;
     background: #0d1f35;
-    border: 1px solid rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
     border-radius: 14px;
     padding: 8px;
-    min-width: 200px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-    z-index: 2000;
+    min-width: 210px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    z-index: 99999;
+    display: none;
 }
-.dropdown-menu { display: none; }
-.dropdown-menu.open { display: block; }
+.dropdown-menu.show { display: block !important; }
 .dropdown-item {
     display: block;
-    padding: 9px 12px;
-    color: rgba(255,255,255,0.8);
+    padding: 10px 14px;
+    color: rgba(255,255,255,0.85);
     text-decoration: none;
     font-size: 13px;
     border-radius: 10px;
@@ -155,7 +155,7 @@
     cursor: pointer;
     font-family: inherit;
 }
-.dropdown-item:hover { background: rgba(255,255,255,0.08); color: white; }
+.dropdown-item:hover { background: rgba(255,255,255,0.1); color: white; }
 .dropdown-divider { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 6px 0; }
 /* Mobile hamburger */
 .hamburger {
@@ -258,39 +258,39 @@
                     <a href="/admin" class="nav-link" style="color:#ffa500;">👑 Admin</a>
                 @endif
 
-                <div class="dropdown">
-                    <div class="dropdown-trigger" onclick="toggleDropdown(event)" id="dropdownTrigger">
-                        <div class="nav-avatar">
-                            @if(Auth::user()->photo_profil)
-                                <img src="{{ Storage::url(Auth::user()->photo_profil) }}" alt="">
-                            @else
-                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                            @endif
-                        </div>
-                        {{ explode(' ', Auth::user()->name)[0] }}
-                        @if(Auth::user()->is_premium)
-                            <span class="premium-badge-nav">★ PRO</span>
-                        @endif
-                        ▾
-                    </div>
-                    <div class="dropdown-menu" id="mainDropdownMenu" style="display:none;">
-                        <a href="/dashboard" class="dropdown-item">🏠 Dashboard</a>
-                        <a href="/feed" class="dropdown-item">📱 Fil d'actualité</a>
-                        <a href="/profil" class="dropdown-item">👤 Mon profil</a>
-                        <a href="/friends/requests" class="dropdown-item">👥 Demandes d'amis</a>
-                        <a href="/messages" class="dropdown-item">💬 Messages</a>
-                        <a href="/remedes/create" class="dropdown-item">🌿 Publier un remède</a>
-                        <a href="/notifications" class="dropdown-item">🔔 Notifications</a>
-                        @if(!Auth::user()->is_premium)
-                            <a href="/premium" class="dropdown-item" style="color:#ffa500;">🌟 Passer Premium</a>
-                        @endif
-                        <div class="dropdown-divider"></div>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="dropdown-item" style="color:rgba(255,80,80,0.8);">🚪 Déconnexion</button>
-                        </form>
-                    </div>
-                </div>
+<div class="dropdown" id="mainDropdown">
+    <div class="dropdown-trigger" id="dropdownTrigger">
+        <div class="nav-avatar">
+            @if(Auth::user()->photo_profil)
+                <img src="{{ Storage::url(Auth::user()->photo_profil) }}" alt="">
+            @else
+                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+            @endif
+        </div>
+        {{ explode(' ', Auth::user()->name)[0] }}
+        @if(Auth::user()->is_premium)
+            <span class="premium-badge-nav">★ PRO</span>
+        @endif
+        <span style="font-size:10px;opacity:0.6;">▾</span>
+    </div>
+    <div class="dropdown-menu" id="mainDropdownMenu">
+        <a href="/dashboard" class="dropdown-item">🏠 Dashboard</a>
+        <a href="/feed" class="dropdown-item">📱 Fil d'actualité</a>
+        <a href="/profil" class="dropdown-item">👤 Mon profil</a>
+        <a href="/friends/requests" class="dropdown-item">👥 Demandes d'amis</a>
+        <a href="/messages" class="dropdown-item">💬 Messages</a>
+        <a href="/remedes/create" class="dropdown-item">🌿 Publier un remède</a>
+        <a href="/notifications" class="dropdown-item">🔔 Notifications</a>
+        @if(!Auth::user()->is_premium)
+            <a href="/premium" class="dropdown-item" style="color:#ffa500;">🌟 Passer Premium</a>
+        @endif
+        <div class="dropdown-divider"></div>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="dropdown-item" style="color:rgba(255,80,80,0.9);">🚪 Déconnexion</button>
+        </form>
+    </div>
+</div>
             @else
                 <a href="/login" class="nav-link">Se connecter</a>
                 <a href="/register" class="nav-btn">Rejoindre BioLink</a>
@@ -298,7 +298,7 @@
         </div>
 
         <!-- Hamburger mobile -->
-        <button class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+        <button class="hamburger" aria-label="Menu">
             <span></span><span></span><span></span>
         </button>
     </nav>
@@ -353,64 +353,6 @@
     </div>
 </header>
 
-<script>
-function toggleMobileMenu() {
-    document.getElementById('mobileMenu').classList.toggle('open');
-}
-
-function toggleDropdown(event) {
-    event.stopPropagation();
-    const menu = document.getElementById('mainDropdownMenu');
-    if (menu.style.display === 'block') {
-        menu.style.display = 'none';
-    } else {
-        menu.style.display = 'block';
-    }
-}
-
-document.addEventListener('click', function(e) {
-    const menu = document.getElementById('mainDropdownMenu');
-    const trigger = document.getElementById('dropdownTrigger');
-    if (menu && trigger && !trigger.contains(e.target)) {
-        menu.style.display = 'none';
-    }
-    const mobileMenu = document.getElementById('mobileMenu');
-    const hamburger = document.querySelector('.hamburger');
-    if (mobileMenu && hamburger && !mobileMenu.contains(e.target) && !hamburger.contains(e.target)) {
-        mobileMenu.classList.remove('open');
-    }
-});
-</script>
-
-<script>
-// Polling notifications temps réel
-@auth
-function checkNotifications() {
-    fetch('/api/notifications/count')
-        .then(r => r.json())
-        .then(data => {
-            const msgBadge = document.getElementById('msg-badge');
-            const notifBadge = document.getElementById('notif-badge');
-            if (msgBadge && data.messages > 0) {
-                msgBadge.textContent = data.messages;
-                msgBadge.style.display = 'flex';
-            } else if (msgBadge) {
-                msgBadge.style.display = 'none';
-            }
-            if (notifBadge && data.notifications > 0) {
-                notifBadge.textContent = data.notifications;
-                notifBadge.style.display = 'flex';
-            } else if (notifBadge) {
-                notifBadge.style.display = 'none';
-            }
-        })
-        .catch(() => {});
-}
-setInterval(checkNotifications, 15000);
-checkNotifications();
-@endauth
-</script>
-
 <!-- Bouton retour en haut -->
 <button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})"
     style="display:none;position:fixed;bottom:80px;right:16px;width:44px;height:44px;border-radius:50%;background:#00e5a0;color:#0a1628;border:none;font-size:20px;cursor:pointer;box-shadow:0 4px 16px rgba(0,229,160,0.4);z-index:999;transition:all 0.3s;align-items:center;justify-content:center;">
@@ -418,12 +360,78 @@ checkNotifications();
 </button>
 
 <script>
-const backBtn = document.getElementById('backToTop');
-window.addEventListener('scroll', () => {
-    if (window.scrollY > 400) {
-        backBtn.style.display = 'flex';
-    } else {
-        backBtn.style.display = 'none';
+(function() {
+    // Dropdown
+    var trigger = document.getElementById('dropdownTrigger');
+    var menu = document.getElementById('mainDropdownMenu');
+
+    if (trigger && menu) {
+        trigger.addEventListener('click', function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            var isOpen = menu.classList.contains('show');
+            // Fermer tous les dropdowns
+            document.querySelectorAll('.dropdown-menu').forEach(function(m) {
+                m.classList.remove('show');
+            });
+            if (!isOpen) {
+                menu.classList.add('show');
+            }
+        });
     }
-});
+
+    // Menu hamburger mobile
+    var hamburger = document.querySelector('.hamburger');
+    var mobileMenu = document.getElementById('mobileMenu');
+
+    if (hamburger && mobileMenu) {
+        hamburger.addEventListener('click', function(e) {
+            e.stopPropagation();
+            mobileMenu.classList.toggle('open');
+        });
+    }
+
+    // Fermer en cliquant ailleurs
+    document.addEventListener('click', function(e) {
+        if (menu && trigger && !trigger.contains(e.target) && !menu.contains(e.target)) {
+            menu.classList.remove('show');
+        }
+        if (mobileMenu && hamburger && !mobileMenu.contains(e.target) && !hamburger.contains(e.target)) {
+            mobileMenu.classList.remove('open');
+        }
+    });
+
+    // Notifications temps réel
+    @auth
+    function checkNotifications() {
+        fetch('/api/notifications/count', {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            var msgBadge = document.getElementById('msg-badge');
+            var notifBadge = document.getElementById('notif-badge');
+            if (msgBadge) {
+                msgBadge.textContent = data.messages;
+                msgBadge.style.display = data.messages > 0 ? 'flex' : 'none';
+            }
+            if (notifBadge) {
+                notifBadge.textContent = data.notifications;
+                notifBadge.style.display = data.notifications > 0 ? 'flex' : 'none';
+            }
+        })
+        .catch(function() {});
+    }
+    setInterval(checkNotifications, 15000);
+    checkNotifications();
+    @endauth
+
+    // Bouton retour en haut
+    var backBtn = document.getElementById('backToTop');
+    if (backBtn) {
+        window.addEventListener('scroll', function() {
+            backBtn.style.display = window.scrollY > 400 ? 'flex' : 'none';
+        });
+    }
+})();
 </script>

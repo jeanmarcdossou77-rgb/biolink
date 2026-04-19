@@ -24,18 +24,19 @@ class AttestationController extends Controller
             ->values()
             ->toArray();
 
-        $pdf = Pdf::loadView('attestation.pdf', compact('user', 'pathologiesPubliees'))
-            ->setPaper('a4', 'portrait')
-            ->setOptions([
-                'dpi' => 150,
-                'defaultFont' => 'DejaVu Sans',
-                'isHtml5ParserEnabled' => true,
-                'isRemoteEnabled' => true,
-                'margin_top' => 0,
-                'margin_right' => 0,
-                'margin_bottom' => 0,
-                'margin_left' => 0,
-            ]);
+$pdf = Pdf::loadView('attestation.pdf', compact('user', 'pathologiesPubliees'))
+    ->setPaper('a4', 'landscape')
+    ->setOptions([
+        'dpi' => 150,
+        'defaultFont' => 'DejaVu Sans',
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled' => false,
+        'margin_top' => 0,
+        'margin_right' => 0,
+        'margin_bottom' => 0,
+        'margin_left' => 0,
+        'enable_php' => false,
+    ]);
 
         $filename = 'Attestation_BioLink_' . str_replace(' ', '_', $user->name) . '_' . now()->format('Y') . '.pdf';
 
@@ -56,8 +57,19 @@ public function telecharger($id)
         ->values()
         ->toArray();
 
-    $pdf = Pdf::loadView('attestation.pdf', compact('user', 'pathologiesPubliees'))
-        ->setPaper('a4', 'portrait');
+$pdf = Pdf::loadView('attestation.pdf', compact('user', 'pathologiesPubliees'))
+    ->setPaper('a4', 'landscape')
+    ->setOptions([
+        'dpi' => 150,
+        'defaultFont' => 'DejaVu Sans',
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled' => false,
+        'margin_top' => 0,
+        'margin_right' => 0,
+        'margin_bottom' => 0,
+        'margin_left' => 0,
+        'enable_php' => false,
+    ]);
 
     $filename = 'Attestation_BioLink_' . str_replace(' ', '_', $user->name) . '_' . now()->format('Y') . '.pdf';
 

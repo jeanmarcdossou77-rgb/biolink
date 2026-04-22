@@ -40,8 +40,8 @@ public function store(Request $request)
 {
     $request->validate([
         'contenu' => 'nullable|string|max:5000',
-        'images.*' => 'nullable|image|max:10240',
-        'video' => 'nullable|file|max:102400',
+        'images.*' => 'nullable|image|max:5120',
+        'video' => 'nullable|file|max:51200',
     ]);
 
     if (!$request->contenu && !$request->hasFile('images') && !$request->hasFile('video')) {
@@ -50,8 +50,16 @@ public function store(Request $request)
 
     $videoPath = null;
     if ($request->hasFile('video')) {
-        $videoUrl = CloudinaryHelper::uploadVideo($request->file('video')->getRealPath());
-        $videoPath = $videoUrl ?? $request->file('video')->store('videos', 'public');
+        $videoPath = $request->file('video')->store('videos', 'public');
+        $videoUrl = \App\Helpers\CloudinaryHelper::uploadVideo(
+            storage_path('app/public/' . $videoPath),
+            'biolink/videos'
+        );
+        if ($videoUrl) {
+            $videoPath = $videoUrl;
+        } else {
+            $videoPath = asset('storage/' . $videoPath);
+        }
     }
 
     $post = Post::create([
@@ -65,27 +73,30 @@ public function store(Request $request)
 
     if ($request->hasFile('images')) {
         foreach (array_slice($request->file('images'), 0, 10) as $index => $image) {
-            $imageUrl = CloudinaryHelper::uploadImage($image->getRealPath());
+            // Sauvegarder localement d'abord
+            $localPath = $image->store('posts', 'public');
+            $finalUrl = asset('storage/' . $localPath);
 
-            if ($imageUrl) {
-                \App\Models\PostImage::create([
-                    'post_id' => $post->id,
-                    'image_path' => $imageUrl,
-                    'ordre' => $index,
-                ]);
-            } else {
-                $path = $image->store('posts', 'public');
-                \App\Models\PostImage::create([
-                    'post_id' => $post->id,
-                    'image_path' => asset('storage/' . $path),
-                    'ordre' => $index,
-                ]);
+            // Essayer Cloudinary
+            $cloudUrl = \App\Helpers\CloudinaryHelper::uploadImage(
+                storage_path('app/public/' . $localPath),
+                'biolink/posts'
+            );
+
+            if ($cloudUrl) {
+                $finalUrl = $cloudUrl;
             }
+
+            \App\Models\PostImage::create([
+                'post_id' => $post->id,
+                'image_path' => $finalUrl,
+                'ordre' => $index,
+            ]);
         }
     }
 
     Auth::user()->increment('points', 5);
-    return redirect()->back()->with('success', '✅ Publication créée !');
+    return redirect('/feed')->with('success', '✅ Publication créée !');
 }
 
     public function destroy($id)

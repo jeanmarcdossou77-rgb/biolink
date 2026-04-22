@@ -99,6 +99,12 @@ public function hasPendingRequestWith($userId)
         return $grades[$this->grade_id] ?? $grades[1];
     }
 
+    public function getPhotoUrlAttribute()
+{
+    if (!$this->photo_profil) return null;
+    return $this->photo_profil;
+}
+
     public function mettreAJourGrade()
     {
         $publications = $this->publications_validees;

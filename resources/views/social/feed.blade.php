@@ -231,46 +231,31 @@
 @endif
 @endif
 
-           @if($post->images->count() > 0)
+@if($post->images->count() > 0)
 @php
     $imgCount = min($post->images->count(), 4);
     $gridClass = ['','c1','c2','c3','c4'][$imgCount];
 @endphp
 <div class="post-imgs {{ $gridClass }}">
     @foreach($post->images->take(4) as $img)
-    @php
-        $imgSrc = '';
-        if ($img->image_path) {
-            if (str_starts_with($img->image_path, 'http')) {
-                $imgSrc = $img->image_path;
-            } elseif (str_starts_with($img->image_path, '/')) {
-                $imgSrc = $img->image_path;
-            } else {
-                $imgSrc = config('app.url') . '/storage/' . ltrim($img->image_path, '/');
-            }
-        }
-    @endphp
-    @if($imgSrc)
-    <img src="{{ $imgSrc }}"
+    @if($img->image_path)
+    <img src="{{ $img->image_path }}"
          alt="Photo"
          loading="lazy"
          style="cursor:zoom-in;"
          onclick="openImg(this.src)"
-         onerror="this.closest('.post-imgs')?.childElementCount === 1 ? this.closest('.post-imgs').style.display='none' : this.style.display='none'">
+         onerror="this.style.display='none'">
     @endif
     @endforeach
 </div>
 @endif
 
 @if($post->video_path)
-@php
-    $videoSrc = str_starts_with($post->video_path, 'http')
-        ? $post->video_path
-        : config('app.url') . '/storage/' . ltrim($post->video_path, '/');
-@endphp
 <div style="background:#000;line-height:0;">
-    <video src="{{ $videoSrc }}" controls preload="metadata"
-        style="width:100%;max-height:420px;display:block;">
+    <video src="{{ $post->video_path }}"
+           controls
+           preload="metadata"
+           style="width:100%;max-height:420px;display:block;">
     </video>
 </div>
 @endif

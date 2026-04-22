@@ -7,6 +7,7 @@ use App\Models\Pathologie;
 use App\Models\Comment;
 use App\Models\Like;
 use App\Models\User;
+use App\Helpers\CloudinaryHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -49,7 +50,8 @@ public function store(Request $request)
 
     $videoPath = null;
     if ($request->hasFile('video')) {
-        $videoPath = $request->file('video')->store('videos', 'public');
+        $videoUrl = CloudinaryHelper::uploadVideo($request->file('video')->getRealPath());
+        $videoPath = $videoUrl ?? $request->file('video')->store('videos', 'public');
     }
 
     $post = Post::create([
@@ -63,21 +65,26 @@ public function store(Request $request)
 
     if ($request->hasFile('images')) {
         foreach (array_slice($request->file('images'), 0, 10) as $index => $image) {
-            try {
+            $imageUrl = CloudinaryHelper::uploadImage($image->getRealPath());
+
+            if ($imageUrl) {
+                \App\Models\PostImage::create([
+                    'post_id' => $post->id,
+                    'image_path' => $imageUrl,
+                    'ordre' => $index,
+                ]);
+            } else {
                 $path = $image->store('posts', 'public');
                 \App\Models\PostImage::create([
                     'post_id' => $post->id,
-                    'image_path' => $path,
+                    'image_path' => asset('storage/' . $path),
                     'ordre' => $index,
                 ]);
-            } catch (\Exception $e) {
-                \Log::error('Erreur upload image: ' . $e->getMessage());
             }
         }
     }
 
     Auth::user()->increment('points', 5);
-
     return redirect()->back()->with('success', '✅ Publication créée !');
 }
 

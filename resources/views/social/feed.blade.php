@@ -166,6 +166,11 @@
                         oninput="autoResize(this)"
                         rows="2"
                     ></textarea>
+                    <div class="form-group" style="margin-top:8px;">
+    <input type="text" name="video_url" 
+        style="width:100%;padding:8px 14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:white;font-size:13px;outline:none;"
+        placeholder="🎬 Ou collez un lien YouTube/TikTok...">
+</div>
                 </div>
 
                 <div id="previewGrid" class="preview-grid"></div>
@@ -251,13 +256,42 @@
 @endif
 
 @if($post->video_path)
-<div style="background:#000;line-height:0;">
-    <video src="{{ $post->video_path }}"
-           controls
-           preload="metadata"
-           style="width:100%;max-height:420px;display:block;">
-    </video>
-</div>
+@php
+    $isYoutube = str_contains($post->video_path, 'youtube') || str_contains($post->video_path, 'youtu.be');
+    $isTiktok = str_contains($post->video_path, 'tiktok');
+    $isExternal = $isYoutube || $isTiktok;
+@endphp
+
+@if($isYoutube)
+    @php
+        preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/', $post->video_path, $matches);
+        $videoId = $matches[1] ?? '';
+    @endphp
+
+    <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;">
+        <iframe src="https://www.youtube.com/embed/{{ $videoId }}"
+            style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
+            allowfullscreen loading="lazy">
+        </iframe>
+    </div>
+
+@elseif(!$isExternal)
+    <div style="background:#000;line-height:0;">
+        <video src="{{ $post->video_path }}"
+            controls
+            preload="metadata"
+            style="width:100%;max-height:420px;display:block;">
+        </video>
+    </div>
+
+@else
+    <div style="padding:12px 16px;background:rgba(255,255,255,0.05);border-radius:10px;margin:0 16px 8px;">
+        <a href="{{ $post->video_path }}" target="_blank"
+            style="color:#378ADD;text-decoration:none;font-size:14px;">
+            🎬 Voir la vidéo
+        </a>
+    </div>
+@endif
 @endif
 
             <!-- Compteurs réactions -->
@@ -461,16 +495,43 @@ function previewImgs(input) {
     const grid = document.getElementById('previewGrid');
     grid.innerHTML = '';
     const files = Array.from(input.files).slice(0, 10);
+    
     files.forEach((file, i) => {
-        const reader = new FileReader();
-        reader.onload = e => {
-            grid.innerHTML += `
-                <div class="preview-item">
-                    <img src="${e.target.result}" alt="">
-                    <button class="preview-remove" onclick="removeImg(${i})" type="button">×</button>
-                </div>`;
-        };
-        reader.readAsDataURL(file);
+        // Compresser l'image avant preview
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let w = img.width;
+                    let h = img.height;
+                    
+                    // Réduire si trop grande
+                    const maxSize = 1200;
+                    if (w > maxSize || h > maxSize) {
+                        const ratio = Math.min(maxSize/w, maxSize/h);
+                        w = Math.round(w * ratio);
+                        h = Math.round(h * ratio);
+                    }
+                    
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    
+                    const compressed = canvas.toDataURL('image/jpeg', 0.8);
+                    
+                    grid.innerHTML += `
+                        <div class="preview-item">
+                            <img src="${compressed}" alt="">
+                            <button class="preview-remove" onclick="removeImg(${i})" type="button">×</button>
+                        </div>`;
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
     });
 }
 

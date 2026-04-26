@@ -40,8 +40,8 @@ public function store(Request $request)
 {
     $request->validate([
         'contenu' => 'nullable|string|max:5000',
-        'images.*' => 'nullable|image|max:5120',
-        'video' => 'nullable|file|max:51200',
+        'images.*' => 'nullable|image|max:20480',
+        'video' => 'nullable|file|max:102400',
     ]);
 
     if (!$request->contenu && !$request->hasFile('images') && !$request->hasFile('video')) {
@@ -50,17 +50,17 @@ public function store(Request $request)
 
     $videoPath = null;
     if ($request->hasFile('video')) {
-        $videoPath = $request->file('video')->store('videos', 'public');
-        $videoUrl = \App\Helpers\CloudinaryHelper::uploadVideo(
-            storage_path('app/public/' . $videoPath),
-            'biolink/videos'
+        $localVideo = $request->file('video')->store('videos', 'public');
+        $cloudUrl = \App\Helpers\CloudinaryHelper::uploadVideo(
+            storage_path('app/public/' . $localVideo)
         );
-        if ($videoUrl) {
-            $videoPath = $videoUrl;
-        } else {
-            $videoPath = asset('storage/' . $videoPath);
-        }
+        $videoPath = $cloudUrl ?? asset('storage/' . $localVideo);
     }
+
+    // Lien vidéo externe (YouTube, TikTok)
+if ($request->video_url && !$videoPath) {
+    $videoPath = $request->video_url;
+}
 
     $post = Post::create([
         'user_id' => Auth::id(),
@@ -73,30 +73,86 @@ public function store(Request $request)
 
     if ($request->hasFile('images')) {
         foreach (array_slice($request->file('images'), 0, 10) as $index => $image) {
-            // Sauvegarder localement d'abord
-            $localPath = $image->store('posts', 'public');
-            $finalUrl = asset('storage/' . $localPath);
+            try {
+                // Compresser avant upload
+                $compressedPath = $this->compressImage($image);
+                
+                $cloudUrl = \App\Helpers\CloudinaryHelper::uploadImage(
+                    $compressedPath, 'biolink/posts'
+                );
 
-            // Essayer Cloudinary
-            $cloudUrl = \App\Helpers\CloudinaryHelper::uploadImage(
-                storage_path('app/public/' . $localPath),
-                'biolink/posts'
-            );
+                $finalUrl = $cloudUrl ?? asset('storage/' . $image->store('posts', 'public'));
 
-            if ($cloudUrl) {
-                $finalUrl = $cloudUrl;
+                \App\Models\PostImage::create([
+                    'post_id' => $post->id,
+                    'image_path' => $finalUrl,
+                    'ordre' => $index,
+                ]);
+
+                // Supprimer le fichier compressé temporaire
+                if (file_exists($compressedPath)) {
+                    @unlink($compressedPath);
+                }
+
+            } catch (\Exception $e) {
+                \Log::error('Upload image error: ' . $e->getMessage());
+                $path = $image->store('posts', 'public');
+                \App\Models\PostImage::create([
+                    'post_id' => $post->id,
+                    'image_path' => asset('storage/' . $path),
+                    'ordre' => $index,
+                ]);
             }
-
-            \App\Models\PostImage::create([
-                'post_id' => $post->id,
-                'image_path' => $finalUrl,
-                'ordre' => $index,
-            ]);
         }
     }
 
     Auth::user()->increment('points', 5);
     return redirect('/feed')->with('success', '✅ Publication créée !');
+}
+
+private function compressImage($image)
+{
+    $tmpPath = sys_get_temp_dir() . '/' . uniqid('biolink_', true) . '.jpg';
+    $mime = $image->getMimeType();
+    $srcPath = $image->getRealPath();
+
+    // Créer image source selon le type
+    $src = null;
+    if ($mime === 'image/jpeg' || $mime === 'image/jpg') {
+        $src = @imagecreatefromjpeg($srcPath);
+    } elseif ($mime === 'image/png') {
+        $src = @imagecreatefrompng($srcPath);
+    } elseif ($mime === 'image/gif') {
+        $src = @imagecreatefromgif($srcPath);
+    } elseif ($mime === 'image/webp') {
+        $src = @imagecreatefromwebp($srcPath);
+    }
+
+    if (!$src) {
+        return $srcPath;
+    }
+
+    // Redimensionner si trop grande
+    $origW = imagesx($src);
+    $origH = imagesy($src);
+    $maxW = 1200;
+    $maxH = 1200;
+
+    if ($origW > $maxW || $origH > $maxH) {
+        $ratio = min($maxW / $origW, $maxH / $origH);
+        $newW = intval($origW * $ratio);
+        $newH = intval($origH * $ratio);
+        $dst = imagecreatetruecolor($newW, $newH);
+        imagecopyresampled($dst, $src, 0, 0, 0, 0, $newW, $newH, $origW, $origH);
+        imagedestroy($src);
+        $src = $dst;
+    }
+
+    // Sauvegarder en JPEG compressé (qualité 80%)
+    imagejpeg($src, $tmpPath, 80);
+    imagedestroy($src);
+
+    return $tmpPath;
 }
 
     public function destroy($id)

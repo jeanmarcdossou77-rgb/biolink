@@ -176,7 +176,6 @@ private function compressImage($image)
         imagedestroy($src);
         $src = $dst;
     }
-    }
 
     // Sauvegarder en JPEG compressé (qualité 80%)
     imagejpeg($src, $tmpPath, 80);

@@ -167,7 +167,6 @@ private function compressImage($image)
 }
 
     // Redimensionner si trop grande
-    $origW = imagesx($src);
     $origH = imagesy($src);
     $maxW = 1200;
     $maxH = 1200;

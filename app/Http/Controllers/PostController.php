@@ -160,9 +160,9 @@ private function compressImage($image)
     } catch (\Exception $e) {
         return $srcPath;
     }
-}
 
     // Redimensionner si trop grande
+    $origH = imagesy($src);
     $origH = imagesy($src);
     $maxW = 1200;
     $maxH = 1200;
@@ -175,6 +175,7 @@ private function compressImage($image)
         imagecopyresampled($dst, $src, 0, 0, 0, 0, $newW, $newH, $origW, $origH);
         imagedestroy($src);
         $src = $dst;
+    }
     }
 
     // Sauvegarder en JPEG compressé (qualité 80%)

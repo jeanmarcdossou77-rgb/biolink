@@ -227,33 +227,33 @@
 <div class="grades-section">
     <div class="section-title">🎓 Système de grades BioLink</div>
     <div class="section-sub">Progressez et faites reconnaître votre expertise scientifique</div>
-    <div class="grades-timeline">
-        <div class="grade-step">
-            <div class="grade-circle active">🌱</div>
-            <div class="grade-name">Débutant</div>
-            <div class="grade-req">Inscription</div>
-        </div>
-        <div class="grade-step">
-            <div class="grade-circle">🌿</div>
-            <div class="grade-name">Contributeur</div>
-            <div class="grade-req">10 publications</div>
-        </div>
-        <div class="grade-step">
-            <div class="grade-circle">🔬</div>
-            <div class="grade-name">Chercheur</div>
-            <div class="grade-req">30 publications</div>
-        </div>
-        <div class="grade-step">
-            <div class="grade-circle">⭐</div>
-            <div class="grade-name">Expert</div>
-            <div class="grade-req">60 publications</div>
-        </div>
-        <div class="grade-step">
-            <div class="grade-circle">🏆</div>
-            <div class="grade-name">Leader</div>
-            <div class="grade-req">Reconnu Admin</div>
-        </div>
+<div class="grades-timeline">
+    <div class="grade-step">
+        <div class="grade-circle active">🌱</div>
+        <div class="grade-name">Débutant</div>
+        <div class="grade-req">Inscription</div>
     </div>
+    <div class="grade-step">
+        <div class="grade-circle">🌿</div>
+        <div class="grade-name">Contributeur</div>
+        <div class="grade-req">6 publications</div>
+    </div>
+    <div class="grade-step">
+        <div class="grade-circle">🔬</div>
+        <div class="grade-name">Chercheur</div>
+        <div class="grade-req">12 publications</div>
+    </div>
+    <div class="grade-step">
+        <div class="grade-circle">⭐</div>
+        <div class="grade-name">Expert</div>
+        <div class="grade-req">20 publications</div>
+    </div>
+    <div class="grade-step">
+        <div class="grade-circle">🏆</div>
+        <div class="grade-name">Leader</div>
+        <div class="grade-req">Reconnu Admin</div>
+    </div>
+</div>
 </div>
 
 <!-- Témoignages -->

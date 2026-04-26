@@ -281,6 +281,7 @@
         <a href="/messages" class="dropdown-item">💬 Messages</a>
         <a href="/remedes/create" class="dropdown-item">🌿 Publier un remède</a>
         <a href="/notifications" class="dropdown-item">🔔 Notifications</a>
+        <a href="/membres/{{ Auth::id() }}" class="dropdown-item">🌐 Mon profil public</a>
         @if(!Auth::user()->is_premium)
             <a href="/premium" class="dropdown-item" style="color:#ffa500;">🌟 Passer Premium</a>
         @endif
@@ -296,6 +297,13 @@
                 <a href="/register" class="nav-btn">Rejoindre BioLink</a>
             @endauth
         </div>
+
+        <!-- Toggle mode sombre/clair -->
+<button id="themeToggle" onclick="toggleTheme()"
+    style="background:none;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);padding:6px 10px;border-radius:10px;cursor:pointer;font-size:16px;transition:all 0.2s;"
+    title="Changer le thème">
+    🌙
+</button>
 
         <!-- Hamburger mobile -->
         <button class="hamburger" aria-label="Menu">
@@ -434,4 +442,32 @@
         });
     }
 })();
+
+// Thème sombre/clair
+function toggleTheme() {
+    const body = document.body;
+    const btn = document.getElementById('themeToggle');
+    const isDark = body.getAttribute('data-theme') !== 'light';
+
+    if (isDark) {
+        body.setAttribute('data-theme', 'light');
+        btn.textContent = '☀️';
+        localStorage.setItem('biolink_theme', 'light');
+    } else {
+        body.setAttribute('data-theme', 'dark');
+        btn.textContent = '🌙';
+        localStorage.setItem('biolink_theme', 'dark');
+    }
+}
+
+// Appliquer thème sauvegardé
+(function() {
+    const saved = localStorage.getItem('biolink_theme');
+    const btn = document.getElementById('themeToggle');
+    if (saved === 'light') {
+        document.body.setAttribute('data-theme', 'light');
+        if (btn) btn.textContent = '☀️';
+    }
+})();
+
 </script>

@@ -82,6 +82,41 @@
     <span style="font-size:13px;color:rgba(255,255,255,0.5);">👁️ {{ $pathologie->vues }} vues</span>
     <p class="description">{{ $pathologie->description }}</p>
 
+    <!-- Boutons de partage -->
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">
+    <a href="https://wa.me/?text={{ urlencode('🌿 Découvrez la pathologie ' . $pathologie->nom . ' sur BioLink : ' . config('app.url') . '/pathologies/' . $pathologie->id) }}"
+       target="_blank"
+       style="display:flex;align-items:center;gap:8px;background:rgba(37,211,102,0.15);border:1px solid #25D366;color:#25D366;padding:10px 18px;border-radius:20px;text-decoration:none;font-size:14px;font-weight:600;transition:all 0.2s;"
+       onmouseover="this.style.background='rgba(37,211,102,0.25)'"
+       onmouseout="this.style.background='rgba(37,211,102,0.15)'">
+        📱 Partager sur WhatsApp
+    </a>
+
+    <button onclick="copyLink()"
+       style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.2);color:white;padding:10px 18px;border-radius:20px;cursor:pointer;font-size:14px;transition:all 0.2s;"
+       onmouseover="this.style.borderColor='#00e5a0';this.style.color='#00e5a0'"
+       onmouseout="this.style.borderColor='rgba(255,255,255,0.2)';this.style.color='white'">
+        🔗 Copier le lien
+    </button>
+
+    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(config('app.url') . '/pathologies/' . $pathologie->id) }}"
+       target="_blank"
+       style="display:flex;align-items:center;gap:8px;background:rgba(24,119,242,0.15);border:1px solid #1877F2;color:#1877F2;padding:10px 18px;border-radius:20px;text-decoration:none;font-size:14px;font-weight:600;">
+        📘 Partager sur Facebook
+    </a>
+</div>
+
+<script>
+function copyLink() {
+    navigator.clipboard.writeText('{{ config('app.url') }}/pathologies/{{ $pathologie->id }}');
+    const btn = event.target;
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✅ Lien copié !';
+    btn.style.color = '#00e5a0';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.color = 'white'; }, 2000);
+}
+</script>
+
     <div class="info-grid">
         <div class="info-card">
             <h3>🩺 Symptômes</h3>

@@ -106,6 +106,124 @@
         </div>
     </div>
 
+    <!-- Graphiques -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px;">
+
+    <!-- Membres par jour -->
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:16px;">📈 Nouveaux membres (7 derniers jours)</div>
+        <canvas id="membresChart" height="150"></canvas>
+    </div>
+
+    <!-- Pathologies les plus consultées -->
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:16px;">🔥 Top 5 pathologies consultées</div>
+        @php
+            $topPathologies = \App\Models\Pathologie::where('approuve', true)
+                ->orderBy('vues', 'desc')->take(5)->get();
+            $maxVues = $topPathologies->max('vues') ?: 1;
+        @endphp
+        @foreach($topPathologies as $p)
+        <div style="margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;">
+                <span>{{ Str::limit($p->nom, 30) }}</span>
+                <span style="color:#00e5a0;">{{ $p->vues }} vues</span>
+            </div>
+            <div style="background:rgba(255,255,255,0.08);border-radius:6px;height:8px;">
+                <div style="width:{{ ($p->vues / $maxVues) * 100 }}%;height:100%;background:linear-gradient(90deg,#00e5a0,#378ADD);border-radius:6px;"></div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+
+    <!-- Publications par semaine -->
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:16px;">📝 Publications (7 derniers jours)</div>
+        <canvas id="postsChart" height="150"></canvas>
+    </div>
+
+    <!-- Répartition grades -->
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;">
+        <div style="font-size:15px;font-weight:700;margin-bottom:16px;">🎓 Répartition des grades</div>
+        @php
+            $gradesStats = \App\Models\User::selectRaw('grade_id, count(*) as total')
+                ->groupBy('grade_id')->orderBy('grade_id')->get();
+            $gradeNames = ['','🌱 Débutant','🌿 Contributeur','🔬 Chercheur','⭐ Expert','🏆 Leader'];
+            $gradeColors = ['','rgba(170,170,170,0.6)','rgba(0,229,160,0.6)','rgba(55,138,221,0.6)','rgba(255,215,0,0.6)','rgba(255,107,53,0.6)'];
+        @endphp
+        @foreach($gradesStats as $g)
+        @php $pct = \App\Models\User::count() > 0 ? round(($g->total / \App\Models\User::count()) * 100) : 0; @endphp
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <div style="width:120px;font-size:12px;color:rgba(255,255,255,0.7);">{{ $gradeNames[$g->grade_id] ?? 'Grade '.$g->grade_id }}</div>
+            <div style="flex:1;background:rgba(255,255,255,0.08);border-radius:6px;height:8px;">
+                <div style="width:{{ $pct }}%;height:100%;background:{{ $gradeColors[$g->grade_id] ?? '#00e5a0' }};border-radius:6px;"></div>
+            </div>
+            <div style="width:40px;font-size:12px;color:#00e5a0;text-align:right;">{{ $g->total }}</div>
+        </div>
+        @endforeach
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+// Données membres par jour
+@php
+$membresParJour = collect(range(6, 0))->map(function($i) {
+    return [
+        'date' => now()->subDays($i)->format('d/m'),
+        'count' => \App\Models\User::whereDate('created_at', now()->subDays($i))->count()
+    ];
+});
+$postsParJour = collect(range(6, 0))->map(function($i) {
+    return [
+        'date' => now()->subDays($i)->format('d/m'),
+        'count' => \App\Models\Post::whereDate('created_at', now()->subDays($i))->count()
+    ];
+});
+@endphp
+
+const chartOptions = {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+        y: { grid: { color: 'rgba(255,255,255,0.07)' }, ticks: { color: 'rgba(255,255,255,0.5)', stepSize: 1 } },
+        x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.5)' } }
+    }
+};
+
+new Chart(document.getElementById('membresChart'), {
+    type: 'bar',
+    data: {
+        labels: {!! json_encode($membresParJour->pluck('date')) !!},
+        datasets: [{
+            data: {!! json_encode($membresParJour->pluck('count')) !!},
+            backgroundColor: 'rgba(0,229,160,0.5)',
+            borderColor: '#00e5a0',
+            borderWidth: 2,
+            borderRadius: 6,
+        }]
+    },
+    options: chartOptions
+});
+
+new Chart(document.getElementById('postsChart'), {
+    type: 'line',
+    data: {
+        labels: {!! json_encode($postsParJour->pluck('date')) !!},
+        datasets: [{
+            data: {!! json_encode($postsParJour->pluck('count')) !!},
+            borderColor: '#378ADD',
+            backgroundColor: 'rgba(55,138,221,0.15)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: '#378ADD',
+        }]
+    },
+    options: chartOptions
+});
+</script>
+
     <!-- Remèdes en attente -->
     <div class="section">
         <h2>

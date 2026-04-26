@@ -215,3 +215,46 @@ Route::get('/storage/{path}', function($path) {
     if (!file_exists($fullPath)) abort(404);
     return response()->file($fullPath);
 })->where('path', '.*');
+
+Route::middleware('auth')->group(function() {
+    Route::post('/suivre/{userId}', function($userId) {
+        $existing = \DB::table('suivis')
+            ->where('follower_id', auth()->id())
+            ->where('suivi_id', $userId)
+            ->first();
+
+        if ($existing) {
+            \DB::table('suivis')->where('id', $existing->id)->delete();
+            \App\Models\User::find($userId)?->decrement('abonnes_count');
+            $estSuivi = false;
+        } else {
+            \DB::table('suivis')->insert([
+                'follower_id' => auth()->id(),
+                'suivi_id' => $userId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            \App\Models\User::find($userId)?->increment('abonnes_count');
+            $estSuivi = true;
+        }
+
+        return redirect()->back()->with('success',
+            $estSuivi ? '✅ Vous suivez maintenant ce membre !' : '👋 Vous ne suivez plus ce membre.'
+        );
+    })->name('suivre');
+
+    Route::get('/membres/{id}', function($id) {
+        $membre = \App\Models\User::findOrFail($id);
+        $posts = \App\Models\Post::where('user_id', $id)
+            ->where('visibilite', 'public')
+            ->with('images')
+            ->latest()
+            ->get();
+        $remedes = \App\Models\Remede::where('user_id', $id)->with('pathologie')->latest()->get();
+        $estSuivi = \DB::table('suivis')
+            ->where('follower_id', auth()->id())
+            ->where('suivi_id', $id)
+            ->exists();
+        return view('profil-public', compact('membre', 'posts', 'remedes', 'estSuivi'));
+    })->name('profil.public');
+});

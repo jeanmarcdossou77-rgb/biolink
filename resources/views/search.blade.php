@@ -351,7 +351,78 @@ document.querySelector('select[name="categorie"]').addEventListener('change', fu
         </div>
 
         <div style="display:flex;justify-content:center;">
-            {{ $pathologies->links() }}
+            @if($pathologies->hasPages())
+<div style="display:flex;justify-content:center;align-items:center;gap:6px;padding:20px 0;flex-wrap:wrap;">
+
+    {{-- Précédent --}}
+    @if($pathologies->onFirstPage())
+        <span style="padding:8px 16px;border-radius:10px;background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.25);font-size:13px;cursor:not-allowed;">← Précédent</span>
+    @else
+        <a href="{{ $pathologies->previousPageUrl() }}"
+            style="padding:8px 16px;border-radius:10px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.8);font-size:13px;text-decoration:none;transition:all 0.2s;"
+            onmouseover="this.style.borderColor='#00e5a0';this.style.color='#00e5a0'"
+            onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='rgba(255,255,255,0.8)'">
+            ← Précédent
+        </a>
+    @endif
+
+    {{-- Pages --}}
+    @php
+        $current = $pathologies->currentPage();
+        $last = $pathologies->lastPage();
+        $start = max(1, $current - 2);
+        $end = min($last, $current + 2);
+    @endphp
+
+    @if($start > 1)
+        <a href="{{ $pathologies->url(1) }}"
+            style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.8);font-size:13px;text-decoration:none;"
+            onmouseover="this.style.borderColor='#00e5a0';this.style.color='#00e5a0'"
+            onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='rgba(255,255,255,0.8)'">1</a>
+        @if($start > 2)
+            <span style="color:rgba(255,255,255,0.4);padding:0 4px;">···</span>
+        @endif
+    @endif
+
+    @for($i = $start; $i <= $end; $i++)
+        @if($i == $current)
+            <span style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:#00e5a0;color:#0a1628;font-size:13px;font-weight:700;">{{ $i }}</span>
+        @else
+            <a href="{{ $pathologies->url($i) }}"
+                style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.8);font-size:13px;text-decoration:none;"
+                onmouseover="this.style.background='rgba(0,229,160,0.15)';this.style.borderColor='#00e5a0';this.style.color='#00e5a0'"
+                onmouseout="this.style.background='rgba(255,255,255,0.07)';this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='rgba(255,255,255,0.8)'">{{ $i }}</a>
+        @endif
+    @endfor
+
+    @if($end < $last)
+        @if($end < $last - 1)
+            <span style="color:rgba(255,255,255,0.4);padding:0 4px;">···</span>
+        @endif
+        <a href="{{ $pathologies->url($last) }}"
+            style="width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.8);font-size:13px;text-decoration:none;"
+            onmouseover="this.style.borderColor='#00e5a0';this.style.color='#00e5a0'"
+            onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='rgba(255,255,255,0.8)'">{{ $last }}</a>
+    @endif
+
+    {{-- Suivant --}}
+    @if($pathologies->hasMorePages())
+        <a href="{{ $pathologies->nextPageUrl() }}"
+            style="padding:8px 16px;border-radius:10px;background:rgba(0,229,160,0.15);border:1px solid rgba(0,229,160,0.4);color:#00e5a0;font-size:13px;text-decoration:none;font-weight:600;transition:all 0.2s;"
+            onmouseover="this.style.background='rgba(0,229,160,0.25)'"
+            onmouseout="this.style.background='rgba(0,229,160,0.15)'">
+            Suivant →
+        </a>
+    @else
+        <span style="padding:8px 16px;border-radius:10px;background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.25);font-size:13px;cursor:not-allowed;">Suivant →</span>
+    @endif
+
+    {{-- Info total --}}
+    <div style="width:100%;text-align:center;margin-top:8px;font-size:12px;color:rgba(255,255,255,0.4);">
+        Page {{ $current }} sur {{ $last }} · {{ $pathologies->total() }} pathologies au total
+    </div>
+</div>
+@endif
         </div>
 
     @elseif(request()->hasAny(['query','categorie','gravite','contagieux']))

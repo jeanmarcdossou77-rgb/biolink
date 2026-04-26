@@ -161,31 +161,56 @@ body { font-family: 'Segoe UI', sans-serif; background: #0a1628; color: white; m
 
         <div>
             <div class="section-title">🎓 Système de grades</div>
-            <div class="grades-card">
-                @php
-                    $grades = [
-                        1 => ['emoji' => '🌱', 'nom' => 'Débutant', 'req' => 'Compte créé', 'bg' => 'rgba(170,170,170,0.2)'],
-                        2 => ['emoji' => '🌿', 'nom' => 'Contributeur', 'req' => '10 publications', 'bg' => 'rgba(0,229,160,0.2)'],
-                        3 => ['emoji' => '🔬', 'nom' => 'Chercheur Actif', 'req' => '30 publications', 'bg' => 'rgba(55,138,221,0.2)'],
-                        4 => ['emoji' => '⭐', 'nom' => 'Expert', 'req' => '60 publications', 'bg' => 'rgba(255,215,0,0.2)'],
-                        5 => ['emoji' => '🏆', 'nom' => 'Leader Scientifique', 'req' => 'Reconnu par Admin', 'bg' => 'rgba(255,107,53,0.2)'],
-                    ];
-                @endphp
-                @foreach($grades as $niveau => $grade)
-                <div class="grade-item">
-                    <div class="grade-badge-small" style="background: {{ $grade['bg'] }}">
-                        {{ $grade['emoji'] }}
-                    </div>
-                    <div style="flex:1">
-                        <div class="grade-info-name">{{ $grade['nom'] }}</div>
-                        <div class="grade-info-req">{{ $grade['req'] }}</div>
-                    </div>
-                    @if(Auth::user()->grade_id == $niveau)
-                        <span class="grade-actuel">← Vous</span>
-                    @endif
-                </div>
-                @endforeach
-            </div>
+@php
+$grades = [
+    1 => ['emoji'=>'🌱','nom'=>'Débutant','req'=>'Compte créé','seuil'=>0,'bg'=>'rgba(170,170,170,0.2)'],
+    2 => ['emoji'=>'🌿','nom'=>'Contributeur','req'=>'6 publications','seuil'=>6,'bg'=>'rgba(0,229,160,0.2)'],
+    3 => ['emoji'=>'🔬','nom'=>'Chercheur Actif','req'=>'12 publications','seuil'=>12,'bg'=>'rgba(55,138,221,0.2)'],
+    4 => ['emoji'=>'⭐','nom'=>'Expert','req'=>'20 publications','seuil'=>20,'bg'=>'rgba(255,215,0,0.2)'],
+    5 => ['emoji'=>'🏆','nom'=>'Leader Scientifique','req'=>'Reconnu par Admin','seuil'=>999,'bg'=>'rgba(255,107,53,0.2)'],
+];
+$pubs = Auth::user()->publications_validees;
+$prochainGrade = null;
+foreach($grades as $niveau => $grade) {
+    if($niveau > Auth::user()->grade_id && $niveau < 5) {
+        $prochainGrade = ['niveau'=>$niveau,'grade'=>$grade,'manque'=>$grade['seuil']-$pubs];
+        break;
+    }
+}
+@endphp
+
+<div class="grades-card">
+    @foreach($grades as $niveau => $grade)
+    <div class="grade-item">
+        <div class="grade-badge-small" style="background:{{ $grade['bg'] }}">{{ $grade['emoji'] }}</div>
+        <div style="flex:1">
+            <div class="grade-info-name">{{ $grade['nom'] }}</div>
+            <div class="grade-info-req">{{ $grade['req'] }}</div>
+        </div>
+        @if(Auth::user()->grade_id == $niveau)
+            <span class="grade-actuel">← Vous</span>
+        @elseif($niveau < Auth::user()->grade_id)
+            <span style="color:#00e5a0;font-size:11px;">✅</span>
+        @endif
+    </div>
+    @endforeach
+
+    @if($prochainGrade)
+    <div style="margin-top:12px;background:rgba(0,229,160,0.08);border:1px solid rgba(0,229,160,0.2);border-radius:10px;padding:10px 14px;">
+        <div style="font-size:12px;color:#00e5a0;font-weight:600;margin-bottom:4px;">
+            🎯 Prochain grade : {{ $prochainGrade['grade']['emoji'] }} {{ $prochainGrade['grade']['nom'] }}
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.6);">
+            Il vous manque <strong style="color:white;">{{ $prochainGrade['manque'] }} publication(s)</strong> validée(s)
+        </div>
+        <div style="margin-top:6px;background:rgba(255,255,255,0.1);border-radius:6px;height:6px;">
+            @php $progress = $prochainGrade['grade']['seuil'] > 0 ? min(100, ($pubs / $prochainGrade['grade']['seuil']) * 100) : 100; @endphp
+            <div style="width:{{ $progress }}%;height:100%;background:#00e5a0;border-radius:6px;"></div>
+        </div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:3px;">{{ $pubs }} / {{ $prochainGrade['grade']['seuil'] }} publications</div>
+    </div>
+    @endif
+</div>
         </div>
     </div>
 

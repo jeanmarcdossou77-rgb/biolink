@@ -116,21 +116,55 @@ private function compressImage($image)
     $mime = $image->getMimeType();
     $srcPath = $image->getRealPath();
 
-    // Créer image source selon le type
-    $src = null;
-    if ($mime === 'image/jpeg' || $mime === 'image/jpg') {
-        $src = @imagecreatefromjpeg($srcPath);
-    } elseif ($mime === 'image/png') {
-        $src = @imagecreatefrompng($srcPath);
-    } elseif ($mime === 'image/gif') {
-        $src = @imagecreatefromgif($srcPath);
-    } elseif ($mime === 'image/webp') {
-        $src = @imagecreatefromwebp($srcPath);
-    }
+    try {
+        $src = null;
+        if ($mime === 'image/jpeg' || $mime === 'image/jpg') {
+            $src = @imagecreatefromjpeg($srcPath);
+        } elseif ($mime === 'image/png') {
+            $src = @imagecreatefrompng($srcPath);
+        } elseif ($mime === 'image/gif') {
+            $src = @imagecreatefromgif($srcPath);
+        } elseif ($mime === 'image/webp') {
+            $src = @imagecreatefromwebp($srcPath);
+        } elseif ($mime === 'image/bmp') {
+            $src = @imagecreatefrombmp($srcPath);
+        }
 
-    if (!$src) {
+        if (!$src) {
+            return $srcPath;
+        }
+
+        $origW = imagesx($src);
+        $origH = imagesy($src);
+        $maxSize = 1200;
+
+        if ($origW > $maxSize || $origH > $maxSize) {
+            $ratio = min($maxSize / $origW, $maxSize / $origH);
+            $newW = intval($origW * $ratio);
+            $newH = intval($origH * $ratio);
+        } else {
+            $newW = $origW;
+            $newH = $origH;
+        }
+
+        $dst = imagecreatetruecolor($newW, $newH);
+
+        // Fond blanc pour PNG/WebP avec transparence
+        $white = imagecolorallocate($dst, 255, 255, 255);
+        imagefilledrectangle($dst, 0, 0, $newW, $newH, $white);
+
+        imagecopyresampled($dst, $src, 0, 0, 0, 0, $newW, $newH, $origW, $origH);
+        imagedestroy($src);
+
+        imagejpeg($dst, $tmpPath, 85);
+        imagedestroy($dst);
+
+        return $tmpPath;
+
+    } catch (\Exception $e) {
         return $srcPath;
     }
+}
 
     // Redimensionner si trop grande
     $origW = imagesx($src);

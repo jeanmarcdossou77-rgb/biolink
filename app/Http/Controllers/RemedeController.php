@@ -64,8 +64,10 @@ public function store(Request $request)
         'approuve' => false,
     ]);
 
-    Auth::user()->increment('points', 10);
-    Auth::user()->increment('publications_validees');
+// Incrémenter publications et vérifier grade
+Auth::user()->increment('publications_validees');
+Auth::user()->increment('points', 10);
+Auth::user()->fresh()->verifierEtMettreAJourGrade();
 
     return redirect('/dashboard')->with('success', '🌿 Votre remède a été soumis pour validation !');
 }

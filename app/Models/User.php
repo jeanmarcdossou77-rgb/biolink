@@ -87,17 +87,61 @@ public function hasPendingRequestWith($userId)
         return $this->hasMany(Pathologie::class);
     }
 
-    public function getNomGradeAttribute()
-    {
-        $grades = [
-            1 => ['nom' => 'Débutant', 'couleur' => '#aaaaaa', 'emoji' => '🌱'],
-            2 => ['nom' => 'Contributeur', 'couleur' => '#00e5a0', 'emoji' => '🌿'],
-            3 => ['nom' => 'Chercheur Actif', 'couleur' => '#378ADD', 'emoji' => '🔬'],
-            4 => ['nom' => 'Expert', 'couleur' => '#FFD700', 'emoji' => '⭐'],
-            5 => ['nom' => 'Leader Scientifique', 'couleur' => '#FF6B35', 'emoji' => '🏆'],
-        ];
-        return $grades[$this->grade_id] ?? $grades[1];
+public function getNomGradeAttribute()
+{
+    $grades = [
+        1 => ['nom' => 'Débutant', 'emoji' => '🌱'],
+        2 => ['nom' => 'Contributeur', 'emoji' => '🌿'],
+        3 => ['nom' => 'Chercheur Actif', 'emoji' => '🔬'],
+        4 => ['nom' => 'Expert', 'emoji' => '⭐'],
+        5 => ['nom' => 'Leader Scientifique', 'emoji' => '🏆'],
+    ];
+    return $grades[$this->grade_id] ?? $grades[1];
+}
+
+public function verifierEtMettreAJourGrade()
+{
+    $pubs = $this->publications_validees;
+    $nouveauGrade = 1;
+
+    if ($pubs >= 20) {
+        $nouveauGrade = 4; // Expert
+    } elseif ($pubs >= 12) {
+        $nouveauGrade = 3; // Chercheur Actif
+    } elseif ($pubs >= 6) {
+        $nouveauGrade = 2; // Contributeur
+    } else {
+        $nouveauGrade = 1; // Débutant
     }
+
+    if ($nouveauGrade > $this->grade_id && $this->grade_id < 5) {
+        $this->update(['grade_id' => $nouveauGrade]);
+
+        // Notifier l'utilisateur
+        \App\Models\NotificationBiolink::envoyer(
+            $this->id,
+            '🎉 Nouveau grade obtenu !',
+            'Félicitations ! Vous avez atteint le grade ' . $this->fresh()->nom_grade['emoji'] . ' ' . $this->fresh()->nom_grade['nom'] . ' !',
+            'success',
+            '/dashboard'
+        );
+    }
+}
+
+public function peutCreerGroupe()
+{
+    return $this->grade_id >= 2; // Contributeur et plus
+}
+
+public function peutPublierPlusPhotos()
+{
+    return $this->grade_id >= 3; // Chercheur et plus
+}
+
+public function peutAccederIAAvancee()
+{
+    return $this->grade_id >= 4; // Expert et plus
+}
 
     public function getPhotoUrlAttribute()
 {

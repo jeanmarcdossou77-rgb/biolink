@@ -48,6 +48,21 @@ return view('admin.index', compact('stats', 'remedes_en_attente', 'pathologies_e
         $remede->update(['approuve' => true]);
         $remede->user->increment('points', 20);
         return redirect()->back()->with('success', '✅ Remède approuvé !');
+
+        // Vérifier grade après validation
+$remede = Remede::findOrFail($id);
+$remede->update(['approuve' => true]);
+$remede->user->increment('publications_validees');
+$remede->user->increment('points', 10);
+$remede->user->fresh()->verifierEtMettreAJourGrade();
+
+NotificationBiolink::envoyer(
+    $remede->user_id,
+    '✅ Remède validé !',
+    'Votre remède "' . $remede->titre . '" a été approuvé par l\'équipe BioLink !',
+    'success',
+    '/dashboard'
+);
     }
 
     public function rejeterRemede($id)

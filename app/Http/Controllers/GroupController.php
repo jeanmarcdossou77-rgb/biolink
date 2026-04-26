@@ -15,13 +15,46 @@ class GroupController extends Controller
         return view('social.groups', compact('groups'));
     }
 
-    public function create()
-    {
-        if (Auth::user()->grade_id < 2) {
-            return redirect()->back()->with('error', '❌ Vous devez être au moins Contributeur pour créer un groupe !');
-        }
-        return view('social.create-group');
+public function create()
+{
+    if (!Auth::user()->peutCreerGroupe()) {
+        return redirect()->back()->with('error',
+            '❌ Vous devez être au moins Contributeur (6 publications validées) pour créer un groupe !'
+        );
     }
+    return view('social.create-group');
+}
+
+public function store(Request $request)
+{
+    if (!Auth::user()->peutCreerGroupe()) {
+        return redirect()->back()->with('error',
+            '❌ Grade insuffisant pour créer un groupe.'
+        );
+    }
+
+    $request->validate([
+        'nom' => 'required|min:3|max:100',
+        'description' => 'required|min:10',
+    ]);
+
+    $group = Group::create([
+        'nom' => $request->nom,
+        'description' => $request->description,
+        'visibilite' => $request->visibilite ?? 'public',
+        'categorie' => $request->categorie ?? 'Santé',
+        'user_id' => Auth::id(),
+        'membres_count' => 1,
+    ]);
+
+    \App\Models\GroupMember::create([
+        'group_id' => $group->id,
+        'user_id' => Auth::id(),
+        'role' => 'admin',
+    ]);
+
+    return redirect('/groups/' . $group->id)->with('success', '✅ Groupe créé !');
+}
 
     public function store(Request $request)
     {

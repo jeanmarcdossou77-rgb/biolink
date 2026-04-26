@@ -146,53 +146,77 @@
         @endif
 
         <!-- Compositeur -->
-        <div class="composer">
-            <form method="POST" action="/posts" enctype="multipart/form-data" id="postForm">
-                @csrf
-                <div class="composer-row">
-                    <div class="av-lg">
-                        @if(Auth::user()->photo_profil)
-                            <img src="{{ Storage::url(Auth::user()->photo_profil) }}" alt="">
-                        @else
-                            {{ strtoupper(substr(Auth::user()->name,0,1)) }}
-                        @endif
-                    </div>
-                    <textarea
-                        name="contenu"
-                        class="composer-input"
-                        id="postInput"
-                        placeholder="Que se passe-t-il aujourd'hui ? Partagez vos connaissances..."
-                        onkeydown="handlePostEnter(event)"
-                        oninput="autoResize(this)"
-                        rows="2"
-                    ></textarea>
-                    <div class="form-group" style="margin-top:8px;">
-    <input type="text" name="video_url" 
-        style="width:100%;padding:8px 14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:white;font-size:13px;outline:none;"
-        placeholder="🎬 Ou collez un lien YouTube/TikTok...">
-</div>
-                </div>
+<div class="composer">
+    <form method="POST" action="/posts" enctype="multipart/form-data" id="postForm">
+        @csrf
 
-                <div id="previewGrid" class="preview-grid"></div>
-                <input type="file" name="images[]" id="imgInput" multiple accept="image/*" style="display:none" onchange="previewImgs(this)">
-
-                <div class="composer-footer">
-                    <div class="composer-tools">
-                        <button type="button" class="tool-btn" onclick="document.getElementById('imgInput').click()" title="Photos">📷</button>
-                        <button type="button" class="tool-btn" onclick="document.getElementById('videoInput').click()" title="Vidéo">🎥</button>
-                        <input type="file" name="video" id="videoInput" accept="video/mp4,video/webm" style="display:none" onchange="previewVideo(this)">
-                        <button type="button" class="emoji-picker-btn" onclick="toggleEmojiPicker('postEmoji','postInput')" title="Emojis">😊</button>
-                        <select name="visibilite" class="visib-select">
-                            <option value="public">🌍 Public</option>
-                            <option value="amis">👥 Amis</option>
-                            <option value="prive">🔒 Privé</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn-post">📝 Publier</button>
-                </div>
-                <div id="postEmoji" class="emoji-panel" style="margin-top:8px;"></div>
-            </form>
+        <!-- Zone de saisie principale -->
+        <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px;">
+            <div class="av-lg" style="flex-shrink:0;">
+                @if(Auth::user()->photo_profil)
+                    <img src="{{ Auth::user()->photo_profil }}" alt="">
+                @else
+                    {{ strtoupper(substr(Auth::user()->name,0,1)) }}
+                @endif
+            </div>
+            <textarea
+                name="contenu"
+                id="postInput"
+                class="composer-input"
+                placeholder="Que se passe-t-il aujourd'hui ? Partagez vos connaissances..."
+                oninput="autoResize(this)"
+                rows="3"
+                style="width:100%;min-height:80px;"
+            ></textarea>
         </div>
+
+        <!-- Lien YouTube (séparé et clair) -->
+        <div style="margin-bottom:12px;">
+            <input type="text" name="video_url"
+                style="width:100%;padding:10px 14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:white;font-size:13px;outline:none;"
+                placeholder="🎬 Lien YouTube ou TikTok (optionnel)">
+        </div>
+
+        <!-- Aperçu images -->
+        <div id="previewGrid" class="preview-grid"></div>
+        <input type="file" name="images[]" id="imgInput" multiple accept="image/*" style="display:none" onchange="previewImgs(this)">
+        <input type="file" name="video" id="videoInput" accept="video/mp4,video/webm" style="display:none" onchange="previewVideo(this)">
+
+        <!-- Barre d'actions -->
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);flex-wrap:wrap;gap:8px;">
+            <div style="display:flex;gap:4px;align-items:center;">
+                <button type="button" onclick="document.getElementById('imgInput').click()"
+                    title="Ajouter des photos"
+                    style="background:none;border:none;cursor:pointer;padding:8px;border-radius:10px;font-size:20px;color:rgba(255,255,255,0.7);transition:all 0.2s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+                    onmouseout="this.style.background='none'">📷</button>
+
+                <button type="button" onclick="document.getElementById('videoInput').click()"
+                    title="Ajouter une vidéo"
+                    style="background:none;border:none;cursor:pointer;padding:8px;border-radius:10px;font-size:20px;color:rgba(255,255,255,0.7);transition:all 0.2s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+                    onmouseout="this.style.background='none'">🎥</button>
+
+                <button type="button" onclick="toggleEmojiPicker('postEmoji','postInput')"
+                    title="Emojis"
+                    style="background:none;border:none;cursor:pointer;padding:8px;border-radius:10px;font-size:20px;color:rgba(255,255,255,0.7);transition:all 0.2s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+                    onmouseout="this.style.background='none'">😊</button>
+
+                <select name="visibilite"
+                    style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:white;padding:6px 10px;border-radius:10px;font-size:12px;outline:none;cursor:pointer;">
+                    <option value="public">🌍 Public</option>
+                    <option value="amis">👥 Amis</option>
+                    <option value="prive">🔒 Privé</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-post">📝 Publier</button>
+        </div>
+
+        <div id="postEmoji" class="emoji-panel" style="margin-top:8px;"></div>
+    </form>
+</div>
 
         <!-- Publications -->
         @forelse($posts as $post)

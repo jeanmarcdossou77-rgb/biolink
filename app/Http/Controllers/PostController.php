@@ -148,14 +148,10 @@ private function compressImage($image)
         }
 
         $dst = imagecreatetruecolor($newW, $newH);
-
-        // Fond blanc pour PNG/WebP avec transparence
         $white = imagecolorallocate($dst, 255, 255, 255);
         imagefilledrectangle($dst, 0, 0, $newW, $newH, $white);
-
         imagecopyresampled($dst, $src, 0, 0, 0, 0, $newW, $newH, $origW, $origH);
         imagedestroy($src);
-
         imagejpeg($dst, $tmpPath, 85);
         imagedestroy($dst);
 

@@ -6,6 +6,7 @@ use App\Models\Pathologie;
 use App\Models\Remede;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
